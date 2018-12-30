@@ -14,7 +14,7 @@
       <table id="customerTable" class="table table-bordered table-hover table-responsive">
         <thead>
           <tr>
-            <th>Id</th>
+            <th>Lab Id</th>
             <th>Name</th>
             <th>Address</th>
             <th>User Name</th>
@@ -29,7 +29,7 @@
         <tbody>
           {{#each labs}}
           <tr>
-            <td><a href='/labs/{{id}}'>{{id}}</a></td>
+            <td><i class="fa fa-flask"></i><a href='labs/{{id}}'>   {{id}}</a></td>
             <td>{{name}}</td>
             <td>{{address}}</td>>
             <td>{{user_name}}</td>>

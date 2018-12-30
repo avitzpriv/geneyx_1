@@ -1,0 +1,38 @@
+  <div class="container">
+  <h2>Owners List</h2>
+    <div class="row col-md-7 ">
+      <table id="customerTable" class="table table-bordered table-hover table-responsive">
+        <thead>
+          <tr>
+            <th>Owner Id</th>
+            <th>Name</th>
+            <th>E-Mail</th>
+            <th>Active</th>
+            <th>Deleted</th>
+            <th>Type</th>
+            <th>Birth Date</th>
+            <th>Gender</th>
+            <th>Blood type</th>
+            <th>Property1</th>
+            <th>Property2</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each ownersList}}
+          <tr>
+            <td><i class="fa fa-user"></i><a href='owner/{{id}}'>   {{id}}</a></td>
+            <td>{{name}}</td>
+            <td>{{email}}</td>>
+            <td>{{active}}</td>
+            <td>{{deleted}}</td>
+            <td>{{type}}</td>
+            <td>{{birth_date}}</td>>
+            <td>{{#if gender}}Female{{else}}Male{{/if}}</td>>
+            <td>{{blood_type}}</td>
+            <td>{{property1}}</td>
+            <td>{{property2}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>

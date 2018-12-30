@@ -18,7 +18,7 @@
       <table id="customerTable" class="table table-bordered table-hover table-responsive">
         <thead>
           <tr>
-            <th>Id</th>
+            <th>Lab Id</th>
             <th>Name</th>
             <th>Address</th>
             <th>User Name</th>
@@ -33,7 +33,7 @@
         <tbody>
           {{#each lab}}
           <tr>
-            <td><a href='/labs/{{id}}'>{{id}}</a></td>
+            <td><i class="fa fa-flask"></i><a href='{{id}}'>   {{id}}</a></td>
             <td>{{name}}</td>
             <td>{{address}}</td>>
             <td>{{user_name}}</td>>
@@ -49,44 +49,7 @@
       </table>
     </div>
   </div>
-  <div class="container">
-  <h2>Owners List</h2>
-    <div class="row col-md-7 ">
-      <table id="customerTable" class="table table-bordered table-hover table-responsive">
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>E-Mail</th>
-            <th>Active</th>
-            <th>Deleted</th>
-            <th>Type</th>
-            <th>Birth Date</th>
-            <th>Gender</th>
-            <th>Blood type</th>
-            <th>Property1</th>
-            <th>Property2</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each ownersList}}
-          <tr>
-            <td><a href='/owner/{{id}}'>{{id}}</a></td>
-            <td>{{name}}</td>
-            <td>{{email}}</td>>
-            <td>{{active}}</td>
-            <td>{{deleted}}</td>
-            <td>{{type}}</td>
-            <td>{{birth_date}}</td>>
-            <td>{{#if gender}}Female{{else}}Male{{/if}}</td>>
-            <td>{{blood_type}}</td>
-            <td>{{property1}}</td>
-            <td>{{property2}}</td>
-          </tr>
-          {{/each}}
-        </tbody>
-      </table>
-    </div>
+  {{>ownerTable}}
   </div>
 
 </section>
