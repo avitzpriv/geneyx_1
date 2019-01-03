@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const models = require('../models/index');
 
 module.exports = {
-    createOwner(name, email, password, labid = null) {
+    createOwner(ownerObj, labid = null) {
         return models.sequelize.transaction(function (t) {
 
             if (labid) {
@@ -14,17 +14,13 @@ module.exports = {
                 }, { transaction: t }).then((labRecord) => {
                     // lab found
                     // create owner details
-                    return models.Owner.create({
-                        name: name,
-                        email: email,
-                        password: password
-                    }, { transaction: t }).then((ownerRecord) => {
+                    return models.Owner.create(ownerObj, { transaction: t }).then((ownerRecord) => {
                         // create owner info
 
                         idstr = '' + ownerRecord.id;
                         return models.OwnerInfo.create({
                             owner_id: bcrypt.hashSync(idstr, 8),
-                            name: name
+                            name: ownerObj.name
                         }).then((oiRecord) => {
                             return ({ l: labRecord, o: ownerRecord })
                         })
@@ -33,15 +29,13 @@ module.exports = {
             }
             else {
                 return models.Owner.create({
-                    name: name,
-                    email: email,
-                    password: password
+                    ownerObj
                 }, { transaction: t }).then((ownerRecord) => {
                     // create owner info
                     var idstr = '' + ownerRecord.id;
                     return models.OwnerInfo.create({
                         owner_id: bcrypt.hashSync(idstr, 8),
-                        name: name
+                        name: ownerObj.name
                     }, { transaction: t })
                 })
             }

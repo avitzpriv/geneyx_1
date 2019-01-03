@@ -9,3 +9,4 @@ module.exports.debug = function(optionalValue) {
       console.log(optionalValue);
     }
   };
+

@@ -5,21 +5,21 @@
             <div class="form-group ">
                 <div class="input-group">
                     <div class="input-group-addon"><i class="fa fa-user"></i></div>
-                    <input type="text" name="user_name" class="form-control" placeholder="Owner name" required="required"
+                    <input type="text" name="name" class="form-control" placeholder="Owner name" required="required"
                         value="">
                 </div>
             </div>
             <div class="form-group ">
                 <div class="input-group">
                     <div class="input-group-addon"><i class="fa fa-envelope"></i></div>
-                    <input type="email" name="user_email" class="form-control" placeholder="Owner E-mail" required="required"
+                    <input type="email" name="email" class="form-control" placeholder="Owner E-mail" required="required"
                         value="">
                 </div>
             </div>
             <div class="form-group ">
                 <div class="input-group">
                     <div class="input-group-addon"><i class="fa fa-birthday-cake"></i></div>
-                    <input type="date" name="user_birthdate" class="form-control" placeholder="Owner birth date" value="">
+                    <input type="date" name="birth_date" class="form-control" placeholder="Owner birth date" value="">
                 </div>
             </div>
             <div class="form-group">
@@ -41,19 +41,15 @@
                     <div class="input-group-addon"><i class="fa fa-vial"></i></div>
                     <h5 style="left:20px; position: relative">Blood type</h5>
                     <div  style="left: 30px; position: relative">
-                        <input type="radio"id="Ablood" name="blood type" value="A" checked>
+                        <input type="radio"id="Ablood" name="blood_type" value="1" checked>
                         <label for="Ablood">A</label>
-                    </div>
-                    <div style="left: 30px; position: relative">
-                        <input type="radio" id="Bblood" name="blood type" value="B">
+                        <input type="radio" id="Bblood" name="blood_type" value="2">
                         <label for="Bblood">B</label>
                     </div>
                     <div style="left: 30px; position: relative">
-                        <input type="radio" id="ABblood" name="blood type" value="AB">
+                        <input type="radio" id="ABblood" name="blood_type" value="3">
                         <label for="ABblood">AB</label>
-                    </div>
-                    <div style="left: 30px; position: relative">
-                        <input type="radio" id="Oblood" name="blood type" value="O">
+                        <input type="radio" id="Oblood" name="blood_type" value="4">
                         <label for="Oblood">O</label>
                     </div>
                 </div>
@@ -68,6 +64,12 @@
                 <div class="input-group">
                     <div class="input-group-addon"><i class="fa fa-asterisk"></i></div>
                     <input type="text" name="property2" class="form-control" placeholder="Property2">
+                </div>
+            </div>
+            <div class="form-group ">
+                <div class="input-group">
+                    <div class="input-group-addon"><i class="fa fa-file"></i></div>
+                    <input type="file" name="file" class="form-control" placeholder="file">
                 </div>
             </div>
             <input type="submit" value="Upload Test" class="btn btn-success btn-custom">
