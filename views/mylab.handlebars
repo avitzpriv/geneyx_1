@@ -171,11 +171,19 @@
   }
 </style>
 <div class="row">
-  <div class="col-md-4">
+  <div class="col-md-3">
     {{>labmenu}}
   </div>
   <div class="col-md-6">
+    {{#if statistics}}
+
+    <h2>Number of owners: {{statistics.numOwners}}</h2>
+    <h3>The oldest owner was born on : {{statistics.minBirth}}</h3>
+    <h3>The youngest owner was born on : {{statistics.maxBirth}}</h3>
+    <h3>Number of females : {{statistics.numFemale}} ; Number of Males : {{statistics.numMale}}</h3>
+    {{/if}}
     {{#if ownersList}}
+    {{putlabid id}}
     {{>ownerTable}}
     {{/if}}
     {{#if Test}}

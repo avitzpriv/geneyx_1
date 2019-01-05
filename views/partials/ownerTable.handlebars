@@ -1,7 +1,8 @@
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <div class="container">
   <h2>Owners List</h2>
     <div class="row col-md-7 ">
-      <table id="customerTable" class="table table-bordered table-hover table-responsive">
+      <table id="customerTable" class="table table-bordered table-jhover table-responsive">
         <thead>
           <tr>
             <th>Owner Id</th>
@@ -15,11 +16,13 @@
             <th>Blood type</th>
             <th>Property1</th>
             <th>Property2</th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           {{#each ownersList}}
-          <tr>
+          <tr {{#if deleted}}style="background-color:lightcoral"{{/if}}>
             <td><i class="fa fa-user"></i><a href='owner/{{id}}'>   {{id}}</a></td>
             <td>{{name}}</td>
             <td>{{email}}</td>>
@@ -31,6 +34,9 @@
             <td>{{blood_type}}</td>
             <td>{{property1}}</td>
             <td>{{property2}}</td>
+            <td><a href='{{getlabid}}/owners/{{id}}/reverse'>
+            <i class={{#if deleted}}"fa fa-undo"{{else}}"fa fa-trash"{{/if}}></i></a></td>
+            <td><a href='{{getlabid}}/owners/{{id}}/edit'><i class="fa fa-edit"></i></a></td>
           </tr>
           {{/each}}
         </tbody>

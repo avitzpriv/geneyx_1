@@ -10,21 +10,41 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:lab_id', (req, res) => {
+
+    var statistics = {}
     models.Lab.findOne({ where: { id: req.params.lab_id } })
         .then((lab) => {
-            res.render('mylab', { name: lab.name, id: lab.id });
-        })
-        .catch(err => console.log(err));
+            models.LabOwner.count({ where: { LabId: lab.id } }).then((cnt) => {
+                statistics.numOwners = cnt;
+                lab.getOwners().then((ownerList) => {
+                    if (ownerList) {
+                        statistics.minBirth = new Date(ownerList.reduce((min, p) => p.birth_date < min ? p.birth_date : min, ownerList[0].birth_date)).toDateString();
+                        statistics.maxBirth = new Date(ownerList.reduce((max, p) => p.birth_date > max ? p.birth_date : max, 0)).toDateString();
+                        statistics.numFemale = ownerList.reduce((ftot,p) => p.gender ? (ftot+1):ftot,0);
+                        statistics.numMale = cnt-statistics.numFemale;
+                    }
+                    res.render('mylab', { name: lab.name, id: lab.id, statistics: statistics });
+                }).catch(err => console.log(err));
+            }).catch(err => console.log(err));
+        }).catch(err => console.log(err));
 });
 
 router.get('/:lab_id/owners', (req, res) => {
-    models.Lab.findOne({ where: { id: req.params.lab_id } })
+    models.Lab.findOne({ where: { id: req.params.lab_id } }, { order: Sequelize.literal('id', 'ASC') })
         .then((lab) => {
-            lab.getOwners().then((ownerList) => {
+            lab.getOwners({ order: Sequelize.literal('id', 'ASC') }).then((ownerList) => {
                 res.render('mylab', { name: lab.name, id: lab.id, ownersList: ownerList });
             }).catch((err) => console.log(err))
         })
         .catch(err => console.log(err));
+});
+
+router.get('/:lab_id/owners/:owner_id/reverse', (req, res) => {
+    ownCtl.deleteOwner(req.params.owner_id, req.params.lab_id).then((result) => {
+        res.redirect(`/lab/${req.params.lab_id}/owners/`);
+    }).catch((err) => {
+        res.redirect(`/lab/${req.params.lab_id}/owners/`);
+    })
 });
 
 router.get('/:lab_id/test', (req, res) => {
@@ -41,7 +61,6 @@ router.post('/:lab_id/test2', (req, res) => {
 
     req.body.password = '12345';
     delete req.body.file;
-    console.log(req.body);
 
     pp = ownCtl.createOwner(req.body, req.params.lab_id);
 
