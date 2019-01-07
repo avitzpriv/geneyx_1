@@ -6,6 +6,7 @@
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
   crossorigin="anonymous"></script>
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
 <section id="labs" class="container">
   <div class="container">
@@ -14,7 +15,7 @@
       <table id="customerTable" class="table table-bordered table-hover table-responsive">
         <thead>
           <tr>
-            <th>Id</th>
+            <th>Lab Id</th>
             <th>Name</th>
             <th>Address</th>
             <th>User Name</th>
@@ -24,12 +25,14 @@
             <th>Type</th>
             <th>Property1</th>
             <th>Property1</th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           {{#each labs}}
           <tr>
-            <td><a href='/labs/{{id}}'>{{id}}</a></td>
+            <td><i class="fa fa-flask"></i><a href='labs/{{id}}'>   {{id}}</a></td>
             <td>{{name}}</td>
             <td>{{address}}</td>>
             <td>{{user_name}}</td>>
@@ -39,6 +42,13 @@
             <td>{{type}}</td>
             <td>{{property1}}</td>>
             <td>{{property2}}</td>>
+            <td><a href='labs/reverse/{{id}}'><i {{#if deleted}}
+                                                   class="fa fa-undo">
+                                                   {{else}}
+                                                   class="fa fa-trash">
+                                                   {{/if}}
+                                                   </i></a></td>
+            <td><a href='labs/edit/{{id}}'><i class="fa fa-edit"></i></a></td>
           </tr>
           {{/each}}
         </tbody>
