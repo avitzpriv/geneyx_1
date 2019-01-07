@@ -5,38 +5,17 @@ const path = require('path')
 const Sequelize = require('sequelize')
 const basename = path.basename(__filename)
 const env = process.env.NODE_ENV || 'development'
-// const config = require(__dirname + '/../config/config.json')[env]
 const db = {}
+const config = require('../db_config')
 
-let host, user, pass, database, logging
-const dialect = process.env.DIALECT 
+const sequelize = new Sequelize(
+  config[env].database,
+  config[env].username,
+  config[env].password,
+  config[env]
+)
 
-if (env === 'development') {
-  host     = process.env.DEV_HOST
-  user     = process.env.DEV_DB_USER
-  pass     = process.env.DEV_DB_PASS
-  database = process.env.DEV_DB
-  logging  = (process.env.DEV_DB_LOGGING === true)
-} else if (env === 'test') {
-  host     = process.env.TEST_HOST
-  user     = process.env.TEST_DB_USER
-  pass     = process.env.TEST_DB_PASS
-  database = process.TEST.DEV_DB
-  logging  = (process.env.TEST_DB_LOGGING === true)
-} else if (env === 'production') {
-  host     = process.env.PROD_HOST
-  user     = process.env.PROD_DB_USER
-  pass     = process.env.PROD_DB_PASS
-  database = process.env.PROD_DB
-  logging  = (process.env.PROD_DB_LOGGING === true)
-} else {
-  throw new Error('Unknown environment kind: ', env)
-}
-
-const sequelize = new Sequelize(database, user, pass, {host: host, dialect: dialect, logging: logging})
-
-fs
-  .readdirSync(__dirname)
+fs.readdirSync(__dirname)
   .filter(file => {
     return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
   })
