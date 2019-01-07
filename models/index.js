@@ -1,19 +1,39 @@
-'use strict';
+'use strict'
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
-const db = {};
+const fs = require('fs')
+const path = require('path')
+const Sequelize = require('sequelize')
+const basename = path.basename(__filename)
+const env = process.env.NODE_ENV || 'development'
+// const config = require(__dirname + '/../config/config.json')[env]
+const db = {}
 
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+let host, user, pass, database, logging
+const dialect = process.env.DIALECT 
+
+if (env === 'development') {
+  host     = process.env.DEV_HOST
+  user     = process.env.DEV_DB_USER
+  pass     = process.env.DEV_DB_PASS
+  database = process.env.DEV_DB
+  logging  = (process.env.DEV_DB_LOGGING === true)
+} else if (env === 'test') {
+  host     = process.env.TEST_HOST
+  user     = process.env.TEST_DB_USER
+  pass     = process.env.TEST_DB_PASS
+  database = process.TEST.DEV_DB
+  logging  = (process.env.TEST_DB_LOGGING === true)
+} else if (env === 'production') {
+  host     = process.env.PROD_HOST
+  user     = process.env.PROD_DB_USER
+  pass     = process.env.PROD_DB_PASS
+  database = process.env.PROD_DB
+  logging  = (process.env.PROD_DB_LOGGING === true)
 } else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+  throw new Error('Unknown environment kind: ', env)
 }
+
+const sequelize = new Sequelize(database, user, pass, {host: host, dialect: dialect, logging: logging})
 
 fs
   .readdirSync(__dirname)
