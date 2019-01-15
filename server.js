@@ -1,15 +1,29 @@
 require('dotenv').config()
 
-const express = require('express');
-const exphbs = require('express-handlebars');
-const bodyParser = require('body-parser');
-const path = require('path');
-const sequelize = require('sequelize');
-const ownerCtl = require('./controllers/Owner');
-const models = require('./models/index');
+const express = require('express')
+const app = express()
+const exphbs = require('express-handlebars')
+const bodyParser = require('body-parser')
+const path = require('path')
+const sequelize = require('sequelize')
+const ownerCtl = require('./controllers/Owner')
+const models = require('./models/index')
 
-const Owner = models.Owner;
-const OwnerInfo = models.OwnerInfo;
+const Owner = models.Owner
+const OwnerInfo = models.OwnerInfo
+
+var server = require('http').Server(app)
+var io = require('socket.io')(server)
+
+const PORT = process.env.APP_PORT
+var date = new Date()
+var hour = date.getHours()
+hour = (hour < 10 ? "0" : "") + hour
+var min = date.getMinutes()
+min = (min < 10 ? "0" : "") + min
+
+server.listen(PORT, console.log(`Server started on port ${PORT}, time:${hour}:${min}`))
+
 
 models.sequelize.sync({ force: false }).then((res) => {
     console.log('sync done!!')
@@ -34,7 +48,6 @@ function initdb() {
     console.log('Finished InitDB');
 }
 
-const app = express();
 
 // Body Parser
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -58,12 +71,10 @@ app.use('/admin/', require('./routes/admin'));
 
 app.use('/lab', require('./routes/lab'));
 
-const PORT = 5000;
-
-var date = new Date();
-var hour = date.getHours();
-hour = (hour < 10 ? "0" : "") + hour;
-var min = date.getMinutes();
-min = (min < 10 ? "0" : "") + min;
-
-app.listen(PORT, console.log(`Server started on port ${PORT}, time:${hour}:${min}`));
+///////////////////////////////////////////////////////////////////////////////////
+//  For Socket.io
+///////////////////////////////////////////////////////////////////////////////////
+io.on('connection', (socket) => {
+  console.log('socket.io connected, setting up uploads listeners')
+  require('./config/server-upload-logic').socketIoSetup(socket)
+})
