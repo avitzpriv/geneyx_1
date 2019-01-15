@@ -55,7 +55,7 @@ const socketIoSetup = (socket) => {
         generateThumbNail(name)
       })
     } else if (files[name]['data'].length > 10485760) { // If the Data Buffer reaches 10MB
-      console.log('Write file buffer to disk')
+      console.log('=========> Write file buffer to disk')
       fs.write(files[name]['handler'], files[name]['data'], null, 'Binary', (err, Writen) => {
         files[name]['data'] = "" // Reset The Buffer
         var place = files[name]['downloaded'] / 524288
