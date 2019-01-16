@@ -1,11 +1,12 @@
 const Sequelize = require('sequelize');
-const bcrypt = require('bcryptjs');
+// const bcrypt = require('bcryptjs');
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Owner = sequelize.define('Owner', {
-    name: { type: DataTypes.STRING },
-    email : { type: DataTypes.STRING, unique: true, validate: {isEmail: true } }, 
-    password: { type: Sequelize.STRING, allowNull: false },
+    // name: { type: DataTypes.STRING },
+    // email : { type: DataTypes.STRING, unique: true, validate: {isEmail: true } }, 
+    // password: { type: Sequelize.STRING, allowNull: false },
+    identity: {type: Sequelize.STRING},
     active: { type: Sequelize.BOOLEAN, defaultValue: true },
     deleted: { type: Sequelize.BOOLEAN, defaultValue: false },
     type: { type: Sequelize.INTEGER },
@@ -18,9 +19,12 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Owner.associate = function(models) {
      models.Owner.belongsToMany(models.Lab, {through: models.LabOwner});
+     models.Owner.hasMany(models.File)
+     models.Owner.hasOne(models.User);
   };
-  Owner.addHook('beforeValidate', (owner, opt) => {
-    owner.password = bcrypt.hashSync(owner.password, 8);
-  });
+  // Owner.addHook('beforeValidate', (owner, opt) => {
+  //   // console.log(`owner: ${JSON.stringify(owner)}`);
+  //   owner.password = bcrypt.hashSync(owner.password, 8);
+  // });
   return Owner;
 };

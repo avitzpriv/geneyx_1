@@ -6,8 +6,8 @@
         <thead>
           <tr>
             <th>Owner Id</th>
-            <th>Name</th>
-            <th>E-Mail</th>
+            <th>Identity</th>
+<!--            <th>E-Mail</th>-->
             <th>Active</th>
             <th>Deleted</th>
             <th>Type</th>
@@ -24,8 +24,8 @@
           {{#each ownersList}}
           <tr {{#if deleted}}style="background-color:lightcoral"{{/if}}>
             <td><i class="fa fa-user"></i><a href='owner/{{id}}'>   {{id}}</a></td>
-            <td>{{name}}</td>
-            <td>{{email}}</td>>
+            <td>{{identity}}</td>
+<!--            <td>{{email}}</td>>-->
             <td>{{active}}</td>
             <td>{{deleted}}</td>
             <td>{{type}}</td>

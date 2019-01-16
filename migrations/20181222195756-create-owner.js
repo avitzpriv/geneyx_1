@@ -8,12 +8,13 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.STRING
-      },
-      email: { type: Sequelize.STRING, unique: true, validate: { isEmail: true } },
-      password: { type: Sequelize.STRING, allowNull: false },
-      active: { type: Sequelize.BOOLEAN, defaultValue: true },
+      // name: {
+      //   type: Sequelize.STRING
+      // },
+      // email: { type: Sequelize.STRING, unique: true, validate: { isEmail: true } },
+      // password: { type: Sequelize.STRING, allowNull: false },
+      identity: {type: Sequelize.STRING},
+      active: { type: Sequelize.BOOLEAN, defaultValue: false },
       deleted: { type: Sequelize.BOOLEAN, defaultValue: false },
       type: { type: Sequelize.INTEGER },
       birth_date: { type: Sequelize.DATE },
