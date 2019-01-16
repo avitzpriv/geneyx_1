@@ -12,9 +12,9 @@ module.exports = {
         type: Sequelize.STRING
       },
       address: { type: Sequelize.STRING },
-      user_name: { type: Sequelize.STRING },
-      user_email: { type: Sequelize.STRING, unique: true, validate: { isEmail: true } },
-      user_pass: { type: Sequelize.STRING }, // encrypted
+      // user_name: { type: Sequelize.STRING },
+      // user_email: { type: Sequelize.STRING, unique: true, validate: { isEmail: true } },
+      // user_pass: { type: Sequelize.STRING }, // encrypted
       active: { type: Sequelize.BOOLEAN, defaultValue: true },
       deleted: { type: Sequelize.BOOLEAN, defaultValue: false },
       type: { type: Sequelize.INTEGER },

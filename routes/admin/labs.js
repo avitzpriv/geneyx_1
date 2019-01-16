@@ -30,14 +30,28 @@ router.get('/add', (req, res) => {
 });
 
 router.post('/added', (req, res) => {
-    models.Lab.create(req.body).
-        then((record) => {
-            res.redirect(`/admin/labs`);
+    return models.sequelize.transaction(t => {
+        labObj = {name: req.body.name}
+        return models.Lab.create(labObj,{transaction:t}).then((labRecord) =>{
+            console.log('Lab created');
+            userObj = {userName:req.body.user_name,
+                       email:req.body.user_email,
+                       type:3,
+                       LabId: labRecord.id,
+                       password: req.body.user_pass }
+            return models.User.create(userObj).then((userRecord) =>{
+                console.log(`user: ${userObj.userName} has been created (id:${userRecord.id})`)
+            });
         })
-        .catch((err) => {
-            console.log('error creating lab');
-            res.redirect('admin/labs');
-        })
+
+    }).
+    then((record) => {
+        res.redirect(`/admin/labs`);
+    })
+    .catch((err) => {
+        console.log('error creating lab');
+        res.redirect('admin/labs');
+    })
 });
 
 router.post('/edit/update', (req, res) => {
@@ -64,7 +78,9 @@ router.get('/:lab_id', (req, res) => {
     ).then((lab) => {
             lab[0].getOwners({ order : Sequelize.literal('id','ASC') })
                 .then((ownersList) => {
-                    res.render('lab', { lab, ownersList });
+                    lab[0].getUsers().then((usersList) =>{
+                        res.render('lab', { lab, ownersList, usersList });
+                    })
                 })
                 .catch(err => console.log(err));
         })

@@ -18,10 +18,12 @@ router.get('/:lab_id', (req, res) => {
                 statistics.numOwners = cnt;
                 lab.getOwners().then((ownerList) => {
                     if (ownerList) {
+                        if(ownerList.length) {
                         statistics.minBirth = new Date(ownerList.reduce((min, p) => p.birth_date < min ? p.birth_date : min, ownerList[0].birth_date)).toDateString();
                         statistics.maxBirth = new Date(ownerList.reduce((max, p) => p.birth_date > max ? p.birth_date : max, 0)).toDateString();
                         statistics.numFemale = ownerList.reduce((ftot,p) => p.gender ? (ftot+1):ftot,0);
                         statistics.numMale = cnt-statistics.numFemale;
+                        }
                     }
                     res.render('mylab', { name: lab.name, id: lab.id, statistics: statistics });
                 }).catch(err => console.log(err));
@@ -62,9 +64,10 @@ router.post('/:lab_id/test2', (req, res) => {
     req.body.password = '12345';
     delete req.body.file;
 
-    pp = ownCtl.createOwner(req.body, req.params.lab_id);
-
+    ownCtl.createOwner(req.body, req.params.lab_id).then((result) => {
     res.redirect(`/lab/${req.params.lab_id}/`);
+    }).catch((err) => console.log(err));
+
 });
 
 

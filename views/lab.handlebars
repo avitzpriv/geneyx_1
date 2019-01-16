@@ -21,8 +21,8 @@
             <th>Lab Id</th>
             <th>Name</th>
             <th>Address</th>
-            <th>User Name</th>
-            <th>User Email</th>
+<!--            <th>User Name</th>
+            <th>User Email</th>-->
             <th>Active</th>
             <th>Deleted</th>
             <th>Type</th>
@@ -36,8 +36,8 @@
             <td><i class="fa fa-flask"></i><a href='{{id}}'>   {{id}}</a></td>
             <td>{{name}}</td>
             <td>{{address}}</td>>
-            <td>{{user_name}}</td>>
-            <td>{{user_email}}</td>>
+<!--            <td>{{user_name}}</td>>
+            <td>{{user_email}}</td>>-->
             <td>{{active}}</td>
             <td>{{deleted}}</td>
             <td>{{type}}</td>
@@ -49,7 +49,11 @@
       </table>
     </div>
   </div>
+  <div>
   {{>ownerTable}}
+  </div>
+  <div>
+  {{>userTable}}
   </div>
 
 </section>

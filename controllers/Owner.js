@@ -4,8 +4,8 @@ const bcrypt = require('bcryptjs');
 
 const models = require('../models/index');
 
-module.exports = {
-    createOwner(ownerObj, labid = null) {
+module.exports.createOwner = function 
+    createOwner(ownerObj, userObj, labid = null) {
         return models.sequelize.transaction(function (t) {
 
             if (labid) {
@@ -21,22 +21,30 @@ module.exports = {
                         return models.OwnerInfo.create({
                             owner_id: bcrypt.hashSync(idstr, 8),
                             name: ownerObj.name
-                        }).then((oiRecord) => {
-                            return ({ l: labRecord, o: ownerRecord })
+                        },{transaction:t}).then((oiRecord) => {
+                            userObj.type=2; // owner
+                            userObj.ownerId=ownerRecord.id;
+                            return models.User.create(userObj).then((userRecord) => {
+                                return ({ l: labRecord, o: ownerRecord, u:userRecord })
+                            })
                         })
                     })
                 })
             }
             else {
-                return models.Owner.create({
+                console.log(`Owner Obj: ${JSON.stringify(ownerObj)}`);
+                return models.Owner.create(
                     ownerObj
-                }, { transaction: t }).then((ownerRecord) => {
+                , { transaction: t }).then((ownerRecord) => {
                     // create owner info
                     var idstr = '' + ownerRecord.id;
                     return models.OwnerInfo.create({
                         owner_id: bcrypt.hashSync(idstr, 8),
                         name: ownerObj.name
-                    }, { transaction: t })
+                    }, { transaction: t }).then((oiRecord) =>{
+                        userObj.type=1; //admin
+                        return models.User.create(userObj);
+                    })
                 })
             }
 
@@ -55,10 +63,8 @@ module.exports = {
             // err is whatever rejected the promise chain returned to the transaction callback
         });
     }
-}
 
-module.exports = {
-    deleteOwner(ownerId, labid = null) {
+module.exports.deleteOwner = function deleteOwner(ownerId, labid = null) {
         return models.sequelize.transaction(function (t) {
 
             if (labid) {
@@ -108,4 +114,3 @@ module.exports = {
             // err is whatever rejected the promise chain returned to the transaction callback
         });
     }
-}
