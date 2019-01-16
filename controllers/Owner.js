@@ -4,8 +4,9 @@ const bcrypt = require('bcryptjs');
 
 const models = require('../models/index');
 
-module.exports.createOwner = function 
-    createOwner(ownerObj, userObj, labid = null) {
+module.exports.createOwner = {
+    createOwner(ownerObj, userObj, labid = null) => {
+        return true;
         return models.sequelize.transaction(function (t) {
 
             if (labid) {
@@ -62,9 +63,8 @@ module.exports.createOwner = function
             // Transaction has been rolled back
             // err is whatever rejected the promise chain returned to the transaction callback
         });
-    }
-
-module.exports.deleteOwner = function deleteOwner(ownerId, labid = null) {
+    },
+    deleteOwner: (ownerId, labid = null) => {
         return models.sequelize.transaction(function (t) {
 
             if (labid) {

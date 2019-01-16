@@ -10,7 +10,6 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:lab_id', (req, res) => {
-
     var statistics = {}
     models.Lab.findOne({ where: { id: req.params.lab_id } })
         .then((lab) => {
@@ -25,7 +24,7 @@ router.get('/:lab_id', (req, res) => {
                         statistics.numMale = cnt-statistics.numFemale;
                         }
                     }
-                    res.render('mylab', { name: lab.name, id: lab.id, statistics: statistics });
+                    // res.render('mylab', { name: lab.name, id: lab.id, statistics: statistics });
                 }).catch(err => console.log(err));
             }).catch(err => console.log(err));
         }).catch(err => console.log(err));
@@ -42,6 +41,7 @@ router.get('/:lab_id/owners', (req, res) => {
 });
 
 router.get('/:lab_id/owners/:owner_id/reverse', (req, res) => {
+
     ownCtl.deleteOwner(req.params.owner_id, req.params.lab_id).then((result) => {
         res.redirect(`/lab/${req.params.lab_id}/owners/`);
     }).catch((err) => {
@@ -60,7 +60,6 @@ router.get('/:lab_id/test', (req, res) => {
 });
 
 router.post('/:lab_id/test2', (req, res) => {
-
     req.body.password = '12345';
     delete req.body.file;
 
