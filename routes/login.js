@@ -17,6 +17,7 @@ passport.use(new localStrategy(function(username, password, done) {
     username = username.toLowerCase();
     console.log(`Passport checking login ${username},${password}`);
     models.User.findOne({where : {email : username}}).then((userRecord) => {
+        console.log(userRecord);
         console.log(`user ${username} found ${JSON.stringify(userRecord)}`);
         // user is an owner -> check password
         if(!bcrypt.compare(password, userRecord.password)) {

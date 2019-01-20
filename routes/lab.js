@@ -24,7 +24,7 @@ router.get('/:lab_id', (req, res) => {
                         statistics.numMale = cnt-statistics.numFemale;
                         }
                     }
-                    // res.render('mylab', { name: lab.name, id: lab.id, statistics: statistics });
+                    res.render('mylab', { name: lab.name, id: lab.id, statistics: statistics });
                 }).catch(err => console.log(err));
             }).catch(err => console.log(err));
         }).catch(err => console.log(err));
@@ -60,10 +60,15 @@ router.get('/:lab_id/test', (req, res) => {
 });
 
 router.post('/:lab_id/test2', (req, res) => {
-    req.body.password = '12345';
     delete req.body.file;
 
-    ownCtl.createOwner(req.body, req.params.lab_id).then((result) => {
+    console.log(`Adding ${JSON.stringify(req.body)}`)
+    userObj={ userName: req.body.name, email: req.body.email, password: '12345'}
+    // delete req.body.name;
+    // delete req.body.email;
+    // delete req.body.password;
+
+    ownCtl.createOwner(req.body, userObj, req.params.lab_id).then((result) => {
     res.redirect(`/lab/${req.params.lab_id}/`);
     }).catch((err) => console.log(err));
 

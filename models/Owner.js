@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     // email : { type: DataTypes.STRING, unique: true, validate: {isEmail: true } }, 
     // password: { type: Sequelize.STRING, allowNull: false },
     identity: {type: Sequelize.STRING},
-    active: { type: Sequelize.BOOLEAN, defaultValue: true },
+    active: { type: Sequelize.BOOLEAN, defaultValue: false },
     deleted: { type: Sequelize.BOOLEAN, defaultValue: false },
     type: { type: Sequelize.INTEGER },
     birth_date: { type: Sequelize.DATE },

@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     LabId: {type: Sequelize.INTEGER },
     OwnerId: {type: Sequelize.INTEGER},
     password: { type: Sequelize.STRING, allowNull: false }
-  }, {});
+  }, {logging:true});
   User.associate = function(models) {
     // associations can be defined here
     User.belongsTo(models.Lab);

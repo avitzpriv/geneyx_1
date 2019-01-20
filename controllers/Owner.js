@@ -4,24 +4,30 @@ const bcrypt = require('bcryptjs');
 
 const models = require('../models/index');
 
-module.exports.createOwner = {
-    createOwner(ownerObj, userObj, labid = null) => {
-        return true;
+module.exports = {
+    createOwner : (ownerObj, userObj, labid = null) => {
         return models.sequelize.transaction(function (t) {
 
+            console.log(`Owner: ${JSON.stringify(ownerObj)}`)
+            console.log(`User: ${JSON.stringify(userObj)}`)
+            console.log(`Lab: ${labid}`)
+            
             if (labid) {
                 return models.Lab.findOne({
                     where: { id: labid }
                 }, { transaction: t }).then((labRecord) => {
+                    console.log(`lab found: ${JSON.stringify(labRecord)}`)
                     // lab found
                     // create owner details
                     return models.Owner.create(ownerObj, { transaction: t }).then((ownerRecord) => {
                         // create owner info
+                        console.log(`Owner created: ${JSON.stringify(labRecord)}`)
 
                         idstr = '' + ownerRecord.id;
+                        console.log(`IDSTR: ${idstr} userObj.userName: ${userObj.userName}`)
                         return models.OwnerInfo.create({
                             owner_id: bcrypt.hashSync(idstr, 8),
-                            name: ownerObj.name
+                            name: userObj.userName
                         },{transaction:t}).then((oiRecord) => {
                             userObj.type=2; // owner
                             userObj.ownerId=ownerRecord.id;
@@ -41,7 +47,7 @@ module.exports.createOwner = {
                     var idstr = '' + ownerRecord.id;
                     return models.OwnerInfo.create({
                         owner_id: bcrypt.hashSync(idstr, 8),
-                        name: ownerObj.name
+                        name: userObj.userName
                     }, { transaction: t }).then((oiRecord) =>{
                         userObj.type=1; //admin
                         return models.User.create(userObj);
@@ -114,3 +120,4 @@ module.exports.createOwner = {
             // err is whatever rejected the promise chain returned to the transaction callback
         });
     }
+}
