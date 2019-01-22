@@ -5,7 +5,7 @@ const socket = io.connect(APP_LOCALHOST + ':' + APP_PORT)
 let fReader
 let selectedFile
 
-function startUpload() {
+function startUpload(event) {
   if(document.getElementById('fileBox').value != "") {
     fReader = new FileReader()
     const name = selectedFile.name
@@ -17,13 +17,30 @@ function startUpload() {
     fReader.onload = function(evnt) {
       socket.emit('Upload', { 'name' : name, data : evnt.target.result })
     }
-    socket.emit('Start', { 'name' : name, 'size' : selectedFile.size })
+
+    const ownerIdentity = event.target.identity.value
+    const ownerEmail    = event.target.email.value
+    const ownerName     = event.target.name.value
+    const labId = window.location.pathname.split('/')[2]
+
+    socket.emit('Start', {
+      'name' : name,
+      'size' : selectedFile.size,
+      'ownerIdentity': ownerIdentity,
+      'ownerEmail': ownerEmail,
+      'ownerName': ownerName,
+      'labId': labId
+    })
   } else {
     alert("Please Select A File")
   }
 
   // Important - to make sure the form submits
-  return true
+  console.log('Returning false !!!!!')
+
+  event.preventDefault()
+  event.stopPropagation()
+  return false
 }
 
 function fileChosen(evnt) {

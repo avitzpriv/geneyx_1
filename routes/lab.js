@@ -6,7 +6,7 @@ const models = require('../models/index');
 const ownCtl = require('../controllers/Owner');
 
 router.get('/', (req, res) => {
-    res.render('mylab');
+    res.render('mylab')
 });
 
 router.get('/:lab_id', (req, res) => {
@@ -24,10 +24,11 @@ router.get('/:lab_id', (req, res) => {
                         statistics.numMale = cnt-statistics.numFemale;
                         }
                     }
-                    res.render('mylab', { name: lab.name, id: lab.id, statistics: statistics });
-                }).catch(err => console.log(err));
-            }).catch(err => console.log(err));
-        }).catch(err => console.log(err));
+                    // res.render('mylab', { name: lab.name, id: lab.id, statistics: statistics })
+                    res.render('mylab', { name: lab.name, id: lab.id, Test: true })
+                }).catch(err => console.log(err))
+            }).catch(err => console.log(err))
+        }).catch(err => console.log(err))
 });
 
 router.get('/:lab_id/owners', (req, res) => {
@@ -54,9 +55,9 @@ router.get('/:lab_id/test', (req, res) => {
         .then((lab) => {
             lab.getOwners().then((ownerList) => {
                 res.render('mylab', { name: lab.name, id: lab.id, Test: true });
-            }).catch((err) => console.log(err))
+            }).catch((err) => console.log(`lab.getOwners (/:lab_id/test). Exception:  ${err}`))
         })
-        .catch(err => console.log(err));
+        .catch(err => console.log(`lab.findOne (/:lab_id/test). Exception: ${err}`))
 });
 
 router.post('/:lab_id/test2', (req, res) => {
