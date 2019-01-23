@@ -1,13 +1,34 @@
 const fs  = require('fs')
+const ownerHelper = require('./ownerHelper')
+
 const files = {}
+
+/**
+ * Save owner data to the database before proceeding with the actual file upload
+ */
+const saveOwner = (data) => {
+  const ownerEmail = data['ownerEmail']
+  const ownerName  = data['ownerName']
+  const labId      = data['labId']
+  const ownerObj = {}
+  const userObj = {
+    userName: ownerName,
+    email: ownerEmail,
+    password: '12345'
+  }
+  ownerHelper.createOwner( ownerObj, userObj, labId )
+}
 
 const socketIoSetup = (socket) => {
 
   /**
    * Handle socker.io Start event
    **/
-  socket.on('Start', function (data) {
-    console.log('Socket received - Start')
+  socket.on('Start', (data) => {
+
+    // Save the owner
+    saveOwner(data)
+
     var name = data['name']
     files[name] = {
       fileSize : data['size'],

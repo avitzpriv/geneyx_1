@@ -114,12 +114,13 @@ app.use('/admin/', require('./routes/admin'));
 app.use('/lab', require('./routes/lab'));
 
 app.use('/login', require('./routes/login'));
+
 ///////////////////////////////////////////////////////////////////////////////////
 //  For Socket.io
 ///////////////////////////////////////////////////////////////////////////////////
 io.on('connection', (socket) => {
   console.log('socket.io connected, setting up uploads listeners')
-  require('./config/server-upload-logic').socketIoSetup(socket)
+  require('./helpers/server-upload-logic').socketIoSetup(socket)
 })
 
 //app.use('/login', require('./routes/login'));
