@@ -31,14 +31,23 @@ router.get('/add', (req, res) => {
 
 router.post('/added', (req, res) => {
     return models.sequelize.transaction(t => {
-        labObj = {name: req.body.name}
+        labObj = {
+            name: req.body.name,
+            address: req.body.address,
+            phone: req.body.phone,
+            additional: req.body.info1,
+            license: req.body.license,
+            issued: req.body.issued,
+            expiry: req.body.expiry,
+            updates: req.body.updates
+        }
         return models.Lab.create(labObj,{transaction:t}).then((labRecord) =>{
             console.log('Lab created');
-            userObj = {userName:req.body.user_name,
-                       email:req.body.user_email,
+            userObj = {userName:req.body.name,
+                       email:req.body.email,
                        type:3,
                        LabId: labRecord.id,
-                       password: req.body.user_pass }
+                       password: req.body.password }
             return models.User.create(userObj).then((userRecord) =>{
                 console.log(`user: ${userObj.userName} has been created (id:${userRecord.id})`)
             });

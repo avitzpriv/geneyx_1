@@ -17,15 +17,15 @@ router.get('/:lab_id', (req, res) => {
                 statistics.numOwners = cnt;
                 lab.getOwners().then((ownerList) => {
                     if (ownerList) {
-                        if(ownerList.length) {
-                        statistics.minBirth = new Date(ownerList.reduce((min, p) => p.birth_date < min ? p.birth_date : min, ownerList[0].birth_date)).toDateString();
-                        statistics.maxBirth = new Date(ownerList.reduce((max, p) => p.birth_date > max ? p.birth_date : max, 0)).toDateString();
-                        statistics.numFemale = ownerList.reduce((ftot,p) => p.gender ? (ftot+1):ftot,0);
-                        statistics.numMale = cnt-statistics.numFemale;
+                        if (ownerList.length) {
+                            statistics.minBirth = new Date(ownerList.reduce((min, p) => p.birth_date < min ? p.birth_date : min, ownerList[0].birth_date)).toDateString();
+                            statistics.maxBirth = new Date(ownerList.reduce((max, p) => p.birth_date > max ? p.birth_date : max, 0)).toDateString();
+                            statistics.numFemale = ownerList.reduce((ftot, p) => p.gender ? (ftot + 1) : ftot, 0);
+                            statistics.numMale = cnt - statistics.numFemale;
                         }
                     }
-                    // res.render('mylab', { name: lab.name, id: lab.id, statistics: statistics })
-                    res.render('mylab', { name: lab.name, id: lab.id, Test: true })
+                    res.render('mylab', { name: lab.name, id: lab.id, ownersList: ownerList })
+                    // res.render('mylab', { name: lab.name, id: lab.id, Test: true })
                 }).catch(err => console.log(err))
             }).catch(err => console.log(err))
         }).catch(err => console.log(err))
@@ -64,16 +64,46 @@ router.post('/:lab_id/test2', (req, res) => {
     delete req.body.file;
 
     console.log(`Adding ${JSON.stringify(req.body)}`)
-    userObj={ userName: req.body.name, email: req.body.email, password: '12345'}
+    userObj = { userName: req.body.name, email: req.body.email, password: '12345' }
     // delete req.body.name;
     // delete req.body.email;
     // delete req.body.password;
 
     ownCtl.createOwner(req.body, userObj, req.params.lab_id).then((result) => {
-    res.redirect(`/lab/${req.params.lab_id}/`);
+        res.redirect(`/lab/${req.params.lab_id}/`);
     }).catch((err) => console.log(err));
 
 });
 
+router.get('/:lab_id/owners/:owner_id/', (req, res) => {
+    console.log(`Looking for lab ${req.params.lab_id}`)
+    models.Lab.findOne({ where: { id: req.params.lab_id } })
+        .then((lab) => {
+            console.log(`Found lab ${lab.name}`)
+            models.Owner.findOne({ where: { id: req.params.owner_id } })
+                .then((ownerRec) => {
+                    console.log(`Found owner ${ownerRec.identity}`)
+                    models.User.findOne({ where: {OwnerId: req.params.owner_id }})
+                        .then((userRec) => {
+                            console.log(`Found user ${userRec.id}`)
+                            //ownerRec.getFiles()
+                             models.File.findAll({where: {ownerId:ownerRec.id}})
+                            .then((fileRec)=>{
+                                console.log(`Found file ${fileRec[0].url}`)
+                                res.render('mylab',{ name: lab.name, id: lab.id, owner:ownerRec, user:userRec, files:fileRec })
+                                console.log(`render`)
+                            }).catch((err) =>{
+                                console.log(`Could not find file, error:${err}`)
+                            })
+                        }).catch((err) => {
+                            console.log(`Could not find user, error:${err}`)
+                        })
+                }).catch((err) => {
+                    console.log(`Could not find owner, error:${err}`)
+                })
+        }).catch((err) => {
+            console.log(`Could not find lab, error:${err}`)
+        })
+});
 
 module.exports = router;

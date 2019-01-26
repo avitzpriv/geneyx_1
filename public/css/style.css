@@ -1,6 +1,12 @@
+
 .login-register-form-section {
 	max-width: 350px;
 	margin: 0 auto;
+	font-family: 'Open Sans', sans-serif;
+}
+
+.wide-section {
+	max-width: 90%;
 }
 
 .login-register-form-section i {
@@ -30,15 +36,27 @@
 }
 
 .login-register-form-section .btn-custom {
-	width: 100%;
+	width: 50%;
+	margin-left: 25%;
 	background-color: #2abb9b;
 	border-color: #2abb9b;
 	margin-bottom: 0.5em;
 	border-radius: 0;
+  }
+
+.login-register-form-section .btn-q {
+	width: 40%;
+	margin-left: 0%;
+}
+
+.login-register-form-section .btn-q:hover {
+	width: 40%!important;
+	margin-left: 0%!important;
 }
 
 .login-register-form-section .btn-custom:hover {
-	width: 100%;
+	width: 50%;
+	margin-left: 25%;
 	background-color: #48A497;
 	border-color: #2abb9b;
 }

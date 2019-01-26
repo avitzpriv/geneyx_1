@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   File.associate = function(models) {
     // associations can be defined here
-    models.File.belongsTo(models.Owner);
+    //models.File.belongsTo(models.Owner);
   };
   return File;
 };

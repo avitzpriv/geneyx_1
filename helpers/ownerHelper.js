@@ -5,12 +5,13 @@ const models = require('../models/index');
 //  Helper methods for the Owner model
 ///////////////////////////////////////////////////////////////////////////////
 
-const createOwner = (ownerObj, userObj, labid = null) => {
+const createOwner = (ownerObj, userObj, labid = null, fileUrl = null) => {
   return models.sequelize.transaction(function (t) {
 
       console.log(`Owner: ${JSON.stringify(ownerObj)}`)
       console.log(`User: ${JSON.stringify(userObj)}`)
       console.log(`Lab: ${labid}`)
+      console.log(`File: ${fileUrl}`)
       
       if (labid) {
           return models.Lab.findOne({
@@ -30,8 +31,19 @@ const createOwner = (ownerObj, userObj, labid = null) => {
                       name: userObj.userName
                   },{transaction:t}).then((oiRecord) => {
                       userObj.type=2; // owner
-                      userObj.ownerId=ownerRecord.id;
-                      return models.User.create(userObj).then((userRecord) => {
+                      userObj.OwnerId=ownerRecord.id;
+                      return models.User.create(userObj,{transaction : t}).then((userRecord) => {
+                          if(fileUrl) {
+                            console.log(`Creating file ${fileUrl}`)
+                            return models.File.create({
+                                url:fileUrl,
+                                ownerId:ownerRecord.id,
+                                uploadDate:ownerRecord.createdAt
+                            })
+                            .then((fileRec) =>{
+                                return ({ l: labRecord, o: ownerRecord, u:userRecord })   
+                            })
+                          } 
                           return ({ l: labRecord, o: ownerRecord, u:userRecord })
                       })
                   })

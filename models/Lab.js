@@ -3,16 +3,20 @@ const Sequelize = require('sequelize');
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Lab = sequelize.define('Lab', {
-    name: {type: DataTypes.STRING},
+    name: {type: DataTypes.STRING, unique: true},
     address: { type: Sequelize.STRING },
+    country:{ type: Sequelize.STRING},
     // user_name: { type: Sequelize.STRING },
     // user_email: { type: Sequelize.STRING, unique: true, validate: { isEmail: true } },
     // user_pass: { type: Sequelize.STRING }, // encrypted
     active: { type: Sequelize.BOOLEAN, defaultValue: true },
     deleted: { type: Sequelize.BOOLEAN, defaultValue: false },
-    type: { type: Sequelize.INTEGER },
-    property1: { type: Sequelize.STRING },
-    property2: { type: Sequelize.STRING }
+    phone: { type: Sequelize.STRING },
+    additional: { type: Sequelize.STRING },
+    license: { type: Sequelize.STRING },
+    issued: { type: Sequelize.DATE},
+    expiry: { type: Sequelize.DATE},
+    updates: { type: Sequelize.BOOLEAN, defaultValue: false},
 }, {});
   Lab.associate = function(models) {
     Lab.belongsToMany(models.Owner, { through: models.LabOwner});

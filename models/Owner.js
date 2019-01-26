@@ -9,7 +9,6 @@ module.exports = (sequelize, DataTypes) => {
     identity: {type: Sequelize.STRING},
     active: { type: Sequelize.BOOLEAN, defaultValue: false },
     deleted: { type: Sequelize.BOOLEAN, defaultValue: false },
-    type: { type: Sequelize.INTEGER },
     birth_date: { type: Sequelize.DATE },
     gender: { type: Sequelize.BOOLEAN },
     blood_type: { type: Sequelize.INTEGER },
@@ -19,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Owner.associate = function(models) {
      models.Owner.belongsToMany(models.Lab, {through: models.LabOwner});
-     models.Owner.hasMany(models.File)
+     //models.Owner.hasMany(models.File)
      models.Owner.hasOne(models.User);
   };
   // Owner.addHook('beforeValidate', (owner, opt) => {

@@ -16,9 +16,10 @@ module.exports = (sequelize, DataTypes) => {
     User.belongsTo(models.Owner);
   };
   User.addHook('beforeValidate', (user, opt) => {
-    // console.log(`owner: ${JSON.stringify(user)}`);
+    //console.log(`owner: ${JSON.stringify(user)}`);
     user.password = bcrypt.hashSync(user.password, 8);
     user.email = user.email.toLowerCase();
+    //user.userName = user.userName.toLowerCase();
   });
   return User;
 };
