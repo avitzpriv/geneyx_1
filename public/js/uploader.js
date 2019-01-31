@@ -1,11 +1,9 @@
-const APP_LOCALHOST = 'http://localhost'
-const APP_PORT = 5000
-
-const socket = io.connect(APP_LOCALHOST + ':' + APP_PORT)
+let socket = null
 let fReader
 let selectedFile
 
 function startUpload(event) {
+  
   if(document.getElementById('fileBox').value != "") {
     fReader = new FileReader()
     const name = selectedFile.name
@@ -62,6 +60,10 @@ function fileChosen(evnt) {
  */
 function windowReady() {
   console.log('Register for events')
+  const appHost = location.host.split(':')[0]
+  const appPort = location.port
+  const connectionStr = `http://${appHost}:${appPort}`
+  socket = io.connect(connectionStr)
   document.getElementById('newTestForm').addEventListener('submit', startUpload)
   document.getElementById('fileBox').addEventListener('change', fileChosen)
 }
