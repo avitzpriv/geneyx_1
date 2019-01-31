@@ -19,16 +19,26 @@ function startUpload(event) {
     }
 
     const ownerIdentity = event.target.identity.value
-    const ownerEmail    = event.target.email.value
-    const ownerName     = event.target.name.value
+    const userEmail    = event.target.email.value
+    const userName     = event.target.name.value
+    const ownerGender = event.target.gender.value
+    const ownerBlood = event.target.blood_type.value
+    const ownerBirth = event.target.birth_date.value
+    const ownerAdd1 = event.target.property1.value
+    const ownerAdd2 = event.target.property2.value
     const labId = window.location.pathname.split('/')[2]
 
     socket.emit('Start', {
       'name' : name,
       'size' : selectedFile.size,
       'ownerIdentity': ownerIdentity,
-      'ownerEmail': ownerEmail,
-      'ownerName': ownerName,
+      'userEmail': userEmail,
+      'userName': userName,
+      'ownerGender': ownerGender,
+      'ownerBlood': ownerBlood,
+      'ownerBirth': ownerBirth,
+      'ownerAdd1': ownerAdd1,
+      'ownerAdd2' : ownerAdd2,
       'labId': labId
     })
   } else {

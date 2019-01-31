@@ -11,16 +11,16 @@
     font-family: verdana;
     font-size: 12px;
     font-weight: 200;
-    background-color: #2e353d;
-    /*position: fixed;*/
-    top: 0px;
-    width: 300px;
+    background-color: white;
+    position: fixed;
+    top: 58px;
+    width: 200px;
     height: 100%;
-    color: #e1ffff;
+    color: black;
   }
 
   .nav-side-menu .brand {
-    background-color: #23282e;
+    background-color: gray;
     line-height: 50px;
     display: block;
     text-align: center;
@@ -111,7 +111,7 @@
 
   .nav-side-menu li a {
     text-decoration: none;
-    color: #e1ffff;
+    color: black;
   }
 
   .nav-side-menu li a i {
@@ -174,7 +174,7 @@
   <div class="col-md-3">
     {{>labmenu}}
   </div>
-  <div class="col-md-6">
+  <div class="col-md-9">
     {{#if statistics}}
 
     <h2>Number of owners: {{statistics.numOwners}}</h2>
@@ -186,9 +186,14 @@
     {{putlabid id}}
     {{>ownerTable}}
     {{/if}}
+
     {{#if Test}}
     {{>singleTest}}
     {{/if}}
+
+    {{#if owner}}
+    {{>singleOwner}}
+    {{/if}}
   </div>
-  <div id="progressBar"></div>
+<div id="progressBar"></div>
 </div>

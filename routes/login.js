@@ -28,7 +28,7 @@ passport.use(new localStrategy(function(username, password, done) {
         }
     }).catch((err) =>{
             // user is also not a lab => no such user
-            console.log('Error:',err)
+            console.log('Passport Error:',err)
             return done(null, false,{message : 'invalid user or password'});
         });
     }));

@@ -7,16 +7,35 @@ const files = {}
  * Save owner data to the database before proceeding with the actual file upload
  */
 const saveOwner = (data) => {
-  const ownerEmail = data['ownerEmail']
-  const ownerName  = data['ownerName']
+
+  const userEmail = data['userEmail']
+  const userName  = data['userName']
   const labId      = data['labId']
-  const ownerObj = {}
+  const ownerIdentity = data['ownerIdentity']
+  const ownerGender = data['ownerGender']
+  const ownerBlood = data['ownerBlood']
+  const ownerBirth = data['ownerBirth']
+  const ownerAdd1 = data['ownerAdd1']
+  const ownerAdd2 = data['ownerAdd2']
+
+  const fileUrl = data['name']
+
+  const ownerObj = {
+    identity: ownerIdentity,
+    gender: ownerGender,
+    blood_type: ownerBlood,
+    birth_date: ownerBirth,
+    property1: ownerAdd1,
+    property2: ownerAdd2
+  }
   const userObj = {
-    userName: ownerName,
-    email: ownerEmail,
+    userName: userName,
+    email: userEmail,
     password: '12345'
   }
-  ownerHelper.createOwner( ownerObj, userObj, labId )
+
+  console.log(`Adding owner:${JSON.stringify(ownerObj)} user: ${JSON.stringify(userObj)} labId: ${labId}`)
+  ownerHelper.createOwner( ownerObj, userObj, labId, fileUrl )
 }
 
 const socketIoSetup = (socket) => {
@@ -26,6 +45,7 @@ const socketIoSetup = (socket) => {
    **/
   socket.on('Start', (data) => {
 
+    console.log(`Starting, data:${JSON.stringify(data)}`)
     // Save the owner
     saveOwner(data)
 
@@ -73,7 +93,7 @@ const socketIoSetup = (socket) => {
     if (files[name]['downloaded'] == files[name]['fileSize']) {
       console.log('File was fully uploaded')
       fs.write(files[name]['handler'], files[name]['data'], null, 'Binary', (err, Writen) => {
-        generateThumbNail(name)
+        generateThumbNail(name,data)
       })
     } else if (files[name]['data'].length > 10485760) { // If the Data Buffer reaches 10MB
       console.log('=========> Write file buffer to disk')

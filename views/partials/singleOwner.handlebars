@@ -1,6 +1,8 @@
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <div class="container">
-  <h3>Patients List</h3>
+      {{#with user}}
+  <h3>{{userName}}</h3>
+      {{/with}}
     <div class="row col-md-8 ">
       <table id="customerTable" class="table table-bordered table-jhover table-responsive">
         <thead>
@@ -22,7 +24,7 @@
           </tr>
         </thead>
         <tbody>
-          {{#each ownersList}}
+          {{#with owner}}
 
           {{#if gender}}
           {{setFemale}}
@@ -40,7 +42,7 @@
           {{else}}
           <tr>
             <td><i class='{{getGenderIcon}}' style="font-size:18px;"></i></td>
-            <td width="15%"><a href='owners/{{id}}'>   {{identity}}</a></td>
+            <td width="15%">{{identity}}</td>
             <td>{{getADate}}</td>
             <td>{{getBDate}}</td>>
             <td width="5%">{{getBlood}}</td>
@@ -51,7 +53,10 @@
             <td><a href='{{getlabid}}/owners/{{id}}/edit'><i class="fa fa-edit"></i></a></td>
           </tr>
           {{/if}}
-          {{/each}}
+          {{/with}}
+          {{#if files}}
+          {{>fileList}}
+          {{/if}}
         </tbody>
       </table>
     </div>

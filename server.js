@@ -106,7 +106,7 @@ app.get('/', (req, res) => {
             console.log(`Admin ${req.user.userName}`);
             res.redirect('/admin');
         }
-    } else res.render('index', { layout: 'landing', message: req.flash() })
+    } else res.render('login', { layout: 'login', message: req.flash() })
 });
 
 app.use('/admin/', require('./routes/admin'));
@@ -115,6 +115,7 @@ app.use('/lab', require('./routes/lab'));
 
 app.use('/login', require('./routes/login'));
 
+app.use('/signup', require('./routes/signup'));
 ///////////////////////////////////////////////////////////////////////////////////
 //  For Socket.io
 ///////////////////////////////////////////////////////////////////////////////////
