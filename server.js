@@ -13,6 +13,8 @@ const path = require('path');
 const sequelize = require('sequelize');
 const ownerCtl = require('./controllers/Owner');
 const models = require('./models/index');
+const ownerHelper = require('./helpers/ownerHelper')
+
 
 const Owner = models.Owner
 const OwnerInfo = models.OwnerInfo
@@ -31,36 +33,127 @@ server.listen(PORT, console.log(`Server started on port ${PORT}, time:${hour}:${
 
 models.sequelize.sync({ force: false }).then((res) => {
     console.log('sync done!!')
-    initdb()
+    process.argv.forEach(function (val, index, array) {
+        console.log(index + ': ' + val);
+        if (val === '-initdb') preinitdb();
+    });
 }).catch((err) => console.log('err sync:', err));
 
-function initdb() {
-    // models.Lab.create({
-    //     name: 'Pronto',
-    // }).then((res) => { 
-    //     console.log(`################## Created lab ${res.id}`);
-    //     models.User.create({
-    //         userName: 'Shira',
-    //         email: 'shira@pronto.com',
-    //         type: 3, //lab
-    //         labId: res.id,
-    //         password: '11111'            
-    //     }) .catch((err) => console.log('error creating user for lab'));
-    // }).catch((err) => console.log('error creating lab:',err));
+labRecords = [];
+userRecords = [];
+prms=[]
+function preinitdb()
+{
+    for(i=0;i<5;i++) {
+        prms.push({labid:i})
+    }
+    for(i=0;i<5;i++) {
+        for(j=0;j<5;j++) {
+            prms.push({labid:i,userid:j})
+        }
 
-    // // // Owner.destroy({where:{id:7}}).then((res)=>console.log('delete user:success')).
-    // // // catch((err)=>console.log('delete user: Failure'));
-    // // // OwnerInfo.destroy({where:{id:7}}).then((res)=>console.log('delete user:success')).
-    // // // catch((err)=>console.log('delete user: Failure'));
-    // models.User.create({
-    //     userName:'Avi', email:'avi@geneyx.com', password:'12345',type:1
-    // })
-    // ownerCtl.createOwner({},{userName:'Raviv', email:'raviv@geneyx.com', password:'12345'}, 1);
-    // //ownerCtl.createOwner('Dudu2', 'dudu2@geneyx.com', '12345');
-    // //console.log('---> Owner created');
-    // console.log('Finished InitDB');
+    }
+    prms.push(null)
+    initdb()
+
 }
+function initdb(i=0) {
 
+    // promises = [];
+    // // for (i = 0; i < 2; i++) {
+    //     var promise = Promise.resolve({ labid: i });
+    //     promises.push(promise)
+    //     for (j = 0; j < 2; j++) {
+    //         var promise = Promise.resolve({ labid: i, userid: j })
+    //         promises.push(promise)
+    //     }
+    // // }
+    if(prms[i]!=null) {
+           promise=Promise.resolve(prms[i])
+
+    // console.log(`PROMISES`)
+    // console.log(`--------`)
+    // console.log(`>${JSON.stringify(promises)}`)
+    // console.log(`========`)
+    promise.then((obj) => {
+        // console.log(`PROMISE OBJJ: ${JSON.stringify(objj)}`)
+        // for (i = 0; i < objj.length; i++) {
+            // obj = objj[i];
+            console.log(`PROMISE: ${JSON.stringify(obj)}`)
+            if (obj.userid>=0) {
+                console.log(`This time creating owner`)
+                if (labRecords[obj.labid]) {
+                    bd = new Date();
+                    bd.setFullYear(1960 + Math.round(Math.random() * 70), 1, 1)
+                    const ownerObj = {
+                        identity: `1000${obj.labid}00${obj.userid}`,
+                        gender: (((Math.round(Math.random() * 10)) % 2) === 0) ? true : false,
+                        blood_type: Math.round(Math.random() * 3) + 1,
+                        birth_date: bd,
+                    }
+                    const userObj = {
+                        userName: `user_${obj.labid}_${obj.userid}`,
+                        email: `user_${obj.labid}_${obj.userid}@gmail.com`,
+                        password: '12345'
+                    }
+                    fileUrl=`fastq_${obj.labid}_${obj.userid}.gz`
+                    console.log(`CREATING OWNER: ${ownerObj}`)
+                    ownerHelper.createOwner(ownerObj,userObj,labRecords[obj.labid].id,fileUrl).then((eee)=>{
+                        initdb(i+1)
+                    })
+                }
+            } else {
+                issuedd = new Date();
+                issuedd.setFullYear(1990, 1, 1)
+                expiryy = new Date();
+                expiryy.setFullYear(2019, 12, 31)
+
+                lab = {
+                    name: `lab${obj.labid}`,
+                    address: `Hamaabadot ${i} street, Tel-Aviv`,
+                    country: 'IL',
+                    phone: `+972123456${obj.labid}`,
+                    license: `Lic${obj.labid}${obj.labid + 1}${obj.labid + 8}`,
+                    issued: issuedd,
+                    expiry: expiryy,
+                    updates: false
+                }
+                console.log(`Lab: ${JSON.stringify(lab)}`)
+
+                models.Lab.create(lab)
+                    .then((labRecord) => {
+                        labRecords.push(labRecord)
+                        console.log(`Lab ${obj.labid} created`);
+                        userObj = {
+
+                            email: `labuser@lab${labRecord.id - 1}.com`,
+                            userName: `labuser${labRecord.id - 1}`,
+                            type: 3,
+                            LabId: labRecord.id,
+                            password: '12345'
+                        }
+                        console.log(`User => ${JSON.stringify(userObj)}`)
+
+                        models.User.create(userObj)
+                            .then((userRecord) => {
+                                console.log(`user: ${userObj.userName} has been created (id:${userRecord.id})`)
+                                userRecords.push(userRecord)
+                                console.log(`what is i:${labRecord.id}`)
+                                initdb(i+1)
+                            }).catch((err) => {
+                                console.log(`Error creating user ${userObj.userName} : ${err}`)
+                            })
+                    }).catch((err) => {
+                        console.log(`Error creating lab ${obj.labid} : ${err}`)
+                    })
+
+            }
+//        }
+    }).catch((err) => {
+        console.log(`INITDB: ${err}`)
+    })
+    }
+}
 
 // Body Parser
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -70,7 +163,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.engine('handlebars', exphbs({
     defaultLayout: 'main',
     helpers: require('./config/helpers.js'),
-    partialsDir: path.join(__dirname,'/views/partials')
+    partialsDir: path.join(__dirname, '/views/partials')
 }
 ));
 app.set('view engine', 'handlebars');
@@ -80,9 +173,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Handle sessions
 app.use(session({
-    secret : 'secret',
-    saveUninitialized : true,
-    resave : true
+    secret: 'secret',
+    saveUninitialized: true,
+    resave: true
 }));
 
 // Passport
@@ -92,17 +185,17 @@ app.use(passport.session());
 // Validator
 app.use(flash());
 app.use(function (req, res, next) {
-  res.locals.messages = require('express-messages')(req, res);
-  next();
+    res.locals.messages = require('express-messages')(req, res);
+    next();
 });
 
 app.get('/', (req, res) => {
-    if(req.user) {
-        if(req.user.constructor.name==='Lab') {
+    if (req.user) {
+        if (req.user.constructor.name === 'Lab') {
             console.log(`Lab ${req.user.name} id:${req.user.id}`);
             res.redirect(`/lab/${req.user.id}`);
         }
-        if(req.user.constructor.name==='User') {
+        if (req.user.constructor.name === 'User') {
             console.log(`Admin ${req.user.userName}`);
             res.redirect('/admin');
         }
@@ -120,8 +213,8 @@ app.use('/signup', require('./routes/signup'));
 //  For Socket.io
 ///////////////////////////////////////////////////////////////////////////////////
 io.on('connection', (socket) => {
-  console.log('socket.io connected, setting up uploads listeners')
-  require('./helpers/server-upload-logic').socketIoSetup(socket)
+    console.log('socket.io connected, setting up uploads listeners')
+    require('./helpers/server-upload-logic').socketIoSetup(socket)
 })
 
 //app.use('/login', require('./routes/login'));

@@ -8,10 +8,10 @@ const models = require('../models/index');
 const createOwner = (ownerObj, userObj, labid = null, fileUrl = null) => {
   return models.sequelize.transaction(function (t) {
 
-      console.log(`Owner: ${JSON.stringify(ownerObj)}`)
-      console.log(`User: ${JSON.stringify(userObj)}`)
-      console.log(`Lab: ${labid}`)
-      console.log(`File: ${fileUrl}`)
+      console.log(`CW - Owner: ${JSON.stringify(ownerObj)}`)
+      console.log(`CW - User: ${JSON.stringify(userObj)}`)
+      console.log(`CW - Lab: ${labid}`)
+      console.log(`CW - File: ${fileUrl}`)
       
       if (labid) {
           return models.Lab.findOne({
