@@ -24,7 +24,7 @@ const saveOwner = (data) => {
     identity: ownerIdentity,
     gender: ownerGender,
     blood_type: ownerBlood,
-    birth_date: ownerBirth,
+    birth_date: Date.now(),
     property1: ownerAdd1,
     property2: ownerAdd2
   }

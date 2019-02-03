@@ -66,6 +66,32 @@ function windowReady() {
   socket = io.connect(connectionStr)
   document.getElementById('newTestForm').addEventListener('submit', startUpload)
   document.getElementById('fileBox').addEventListener('change', fileChosen)
+
+  /**
+   * Hanlde MoreData event from socket.io
+   */
+  socket.on('MoreData', function (data) {
+    console.log('In Socker.io MoreData')
+
+    updateBar(data['percent'])
+    //The Next Blocks Starting Position
+    var place = data['place'] * 524288;
+
+    //The Variable that will hold the new Block of Data
+    var newFile = selectedFile.slice(place, place + Math.min(524288, (selectedFile.size-place)))
+    fReader.readAsBinaryString(newFile)
+  })
+
+  /**
+   * Hanlde Done event from socket.io
+   */
+  socket.on('Done', (data) => {
+    console.log('In Socker.io Done')
+    var content = "File Successfully Uploaded !!"
+    content += "<button  type='button' name='upload' value='' id='restart' class='button'>Upload Another</button>"
+    document.getElementById('uploadArea').innerHTML = content
+    document.getElementById('restart').addEventListener('click', () => {location.reload(true)})
+  })
 }
 window.addEventListener("load", windowReady)
 
@@ -76,28 +102,4 @@ function updateBar(percent) {
   document.getElementById('MB').innerHTML = mBDone
 }
 
-/**
- * Hanlde MoreData event from socket.io
- */
-socket.on('MoreData', function (data) {
-  console.log('In Socker.io MoreData')
 
-  updateBar(data['percent'])
-  //The Next Blocks Starting Position
-  var place = data['place'] * 524288;
-
-  //The Variable that will hold the new Block of Data
-  var newFile = selectedFile.slice(place, place + Math.min(524288, (selectedFile.size-place)))
-  fReader.readAsBinaryString(newFile)
-})
-
-/**
- * Hanlde Done event from socket.io
- */
-socket.on('Done', (data) => {
-  console.log('In Socker.io Done')
-  var content = "File Successfully Uploaded !!"
-  content += "<button  type='button' name='upload' value='' id='restart' class='button'>Upload Another</button>"
-  document.getElementById('uploadArea').innerHTML = content
-  document.getElementById('restart').addEventListener('click', () => {location.reload(true)})
-})
