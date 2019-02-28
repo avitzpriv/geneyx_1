@@ -1,5 +1,5 @@
-const bcrypt = require('bcryptjs');
-const models = require('../models/index');
+const bcrypt = require('bcryptjs')
+const models = require('../models/index')
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Helper methods for the Owner model

@@ -14,6 +14,8 @@ const sequelize = require('sequelize');
 const ownerCtl = require('./controllers/Owner');
 const models = require('./models/index');
 const ownerHelper = require('./helpers/ownerHelper')
+const cors = require('cors')
+const jwtHelper = require('./helpers/jwtHelper')
 
 
 const Owner = models.Owner
@@ -155,9 +157,14 @@ function initdb(i=0) {
     }
 }
 
+// Verify validity of call
+app.use(jwtHelper.middleWareVerify)
+
 // Body Parser
-app.use(bodyParser.urlencoded({ extended: false }));
-//app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
+app.use(cors())
 
 // Handlebars
 app.engine('handlebars', exphbs({
@@ -202,13 +209,17 @@ app.get('/', (req, res) => {
     } else res.render('login', { layout: 'login', message: req.flash() })
 });
 
-app.use('/admin/', require('./routes/admin'));
+app.use('/admin/', require('./routes/admin'))
 
-app.use('/lab', require('./routes/lab'));
+app.use('/lab', require('./routes/lab'))
 
-app.use('/login', require('./routes/login'));
+app.use('/login', require('./routes/login'))
 
-app.use('/signup', require('./routes/signup'));
+app.use('/signup', require('./routes/signup'))
+
+app.use('/users/', require('./controllers/UserController'))
+
+
 ///////////////////////////////////////////////////////////////////////////////////
 //  For Socket.io
 ///////////////////////////////////////////////////////////////////////////////////

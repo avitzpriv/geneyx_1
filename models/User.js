@@ -1,6 +1,8 @@
-const Sequelize = require('sequelize');
-const bcrypt = require('bcryptjs');
-'use strict';
+'use strict'
+
+const Sequelize = require('sequelize')
+const bcrypt = require('bcryptjs')
+
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     userName: { type: DataTypes.STRING },
@@ -9,17 +11,19 @@ module.exports = (sequelize, DataTypes) => {
     LabId: {type: Sequelize.INTEGER },
     OwnerId: {type: Sequelize.INTEGER},
     password: { type: Sequelize.STRING, allowNull: false }
-  }, {logging:true});
+  }, {logging:true})
+
+  // associations can be defined here
   User.associate = function(models) {
-    // associations can be defined here
-    User.belongsTo(models.Lab);
-    User.belongsTo(models.Owner);
-  };
+    
+    User.belongsTo(models.Lab)
+    User.belongsTo(models.Owner)
+  }
+
   User.addHook('beforeValidate', (user, opt) => {
-    //console.log(`owner: ${JSON.stringify(user)}`);
-    user.password = bcrypt.hashSync(user.password, 8);
-    user.email = user.email.toLowerCase();
-    //user.userName = user.userName.toLowerCase();
-  });
-  return User;
-};
+    user.password = bcrypt.hashSync(user.password, 10)
+    user.email = user.email.toLowerCase()
+  })
+
+  return User
+}
