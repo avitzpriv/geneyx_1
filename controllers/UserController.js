@@ -7,7 +7,9 @@ const _ = require('lodash')
 const bcrypt = require('bcryptjs')
 const jwtHelper = require('../helpers/jwtHelper')
 
-
+/**
+ * Authenticate a user
+ */
 const authenticate = (req, res, next) => {
   console.log('UserController - auth() - req: ', req.body)
   const { userName, password } = req.body
@@ -29,17 +31,20 @@ const authenticate = (req, res, next) => {
           } else {
             console.log('No match')
             res.status(403).json({message: '1 - Username or password is incorrect'})
-            res.redirect('/')
+            res.redirect('/login')
           }
 
         })
       } else {
         res.status(400).json({ message: '2 - Username or password is incorrect' })
-        res.redirect('/')
+        res.redirect('/login')
       }
     })
 }
 
+/**
+ * Add a new user to the system
+ */
 const createUser = (req, res, next) => {
   console.log('UserController - create_user()')
   const {userName, email, password} = req.body
@@ -55,7 +60,15 @@ const createUser = (req, res, next) => {
              })
 }
 
+/**
+ * Display a login screen
+ */
+const login = (req, res, next) => {
+  res.render('login')
+}
+
 router.post('/authenticate', authenticate)
 router.post('/create_user', createUser)
+router.get('/login', login)
 
 module.exports = router

@@ -207,13 +207,11 @@ app.get('/', (req, res) => {
             res.redirect('/admin');
         }
     } else res.render('login', { layout: 'login', message: req.flash() })
-});
+})
 
 app.use('/admin/', require('./routes/admin'))
 
 app.use('/lab', require('./routes/lab'))
-
-app.use('/login', require('./routes/login'))
 
 app.use('/signup', require('./routes/signup'))
 

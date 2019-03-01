@@ -29,7 +29,12 @@ const sign = (payload, options) => {
 
 const middleWareVerify = (req, res, next) => {
   const excemptPaths = [
-    '/users/authenticate'
+    '/users/authenticate',
+    '/users/login',
+    '/css/login.css',
+    '/img/geneyx.png',
+    '/img/user.png',
+    '/img/notification.png'
   ]
   console.log('===========================')
   console.log('headers: ', req.headers)
@@ -44,7 +49,8 @@ const middleWareVerify = (req, res, next) => {
   /** Get the authorization token */
   const auth = req.headers['authorization']
   if (_.isNil(auth)) {
-    res.status(403).json({message: 'Request denied'})
+    // res.status(403).json({message: 'Request denied'})
+    res.redirect('/users/login')
     return
   }
   const token = auth.split(' ')[1]
