@@ -23,12 +23,10 @@ const middleWareVerify = (req, res, next) => {
   const excemptPaths = [
     '/authenticate',
     '/login',
-    '/css/login.css',
-    '/img/geneyx.png',
-    '/img/user.png',
-    '/img/notification.png',
+    '/css',
+    '/img',
     '/js/login.js',
-    '/home'
+    '/users/create_user'
   ]
   /** Some paths should not be checked */
   if (_.find(excemptPaths, e => req.url.startsWith(e))) {

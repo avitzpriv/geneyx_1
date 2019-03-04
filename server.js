@@ -16,10 +16,9 @@ const models = require('./models/index');
 const ownerHelper = require('./helpers/ownerHelper')
 const cors = require('cors')
 const jwtHelper = require('./helpers/jwtHelper')
-
 const _   = require('lodash')
 const bcrypt = require('bcryptjs')
-
+const userHelper = require('./helpers/userHelper')
 
 const Owner = models.Owner
 const OwnerInfo = models.OwnerInfo
@@ -47,21 +46,25 @@ models.sequelize.sync({ force: false }).then((res) => {
 labRecords = [];
 userRecords = [];
 prms=[]
-function preinitdb()
-{
-    for(i=0;i<5;i++) {
-        prms.push({labid:i})
-    }
-    for(i=0;i<5;i++) {
-        for(j=0;j<5;j++) {
-            prms.push({labid:i,userid:j})
-        }
+function preinitdb() {
+  for(i=0;i<5;i++) {
+      prms.push({labid:i})
+  }
+  for(i=0;i<5;i++) {
+      for(j=0;j<5;j++) {
+          prms.push({labid:i,userid:j})
+      }
 
-    }
-    prms.push(null)
-    initdb()
+  }
+  prms.push(null)
+  initdb()
 
+  console.log('Createing lab user for Avi')
+  userHelper.createUser('avi', 'avi@geneyx.com', '1234', 3, 1)
+  console.log('Createing lab user for Danny')
+  userHelper.createUser('dannym', 'danny@geneyx.com', '1234', 3, 1)
 }
+
 function initdb(i=0) {
 
     // promises = [];

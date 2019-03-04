@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     // name: { type: DataTypes.STRING },
     // email : { type: DataTypes.STRING, unique: true, validate: {isEmail: true } }, 
     // password: { type: Sequelize.STRING, allowNull: false },
-    identity: {type: Sequelize.STRING},
+    identity: {type: Sequelize.STRING},  // The external id
     active: { type: Sequelize.BOOLEAN, defaultValue: false },
     deleted: { type: Sequelize.BOOLEAN, defaultValue: false },
     birth_date: { type: Sequelize.DATE },
