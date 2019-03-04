@@ -8,14 +8,6 @@ const _   = require('lodash')
 const privateKEY = fs.readFileSync('./keys/private.key', 'utf8')
 const publicKEY  = fs.readFileSync('./keys/public.key', 'utf8')  
 
-/*
-   options = {
-    issuer: "Geneyx",
-    // subject: "user@acme.com", 
-    // audience: "Client_Identity" // this should be provided by client
-   }
- */
-
 const sign = (payload, options) => { 
   // Token signing options
   const signOptions = {
@@ -29,32 +21,32 @@ const sign = (payload, options) => {
 
 const middleWareVerify = (req, res, next) => {
   const excemptPaths = [
-    '/users/authenticate',
-    '/users/login',
+    '/authenticate',
+    '/login',
     '/css/login.css',
     '/img/geneyx.png',
     '/img/user.png',
-    '/img/notification.png'
+    '/img/notification.png',
+    '/js/login.js',
+    '/home'
   ]
-  console.log('===========================')
-  console.log('headers: ', req.headers)
-  console.log('URL: ', req.url)
-
   /** Some paths should not be checked */
-  if (_.find(excemptPaths, e => e === req.url)) {
+  if (_.find(excemptPaths, e => req.url.startsWith(e))) {
     next()
     return
   }
 
   /** Get the authorization token */
-  const auth = req.headers['authorization']
+  const cookies = req.headers.cookie
+  const cookiearr = cookies.split('; ')
+  const auth = _.find(cookiearr, (coo) => {
+    return coo.trim().startsWith('ngxtoken')
+  })
   if (_.isNil(auth)) {
-    // res.status(403).json({message: 'Request denied'})
-    res.redirect('/users/login')
+    res.redirect('/login')
     return
   }
-  const token = auth.split(' ')[1]
-  console.log('TOKEN: ', token)
+  const token = auth.split('=')[1]
 
   /** Use JWT to verify the token. It will also verify expiration date */
   if (verify(token, {issuer: 'Geneyx'})) {

@@ -2,31 +2,32 @@
 <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
 
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
 <link href="/css/login.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/js/login.js"></script>
 
 <section id="login-register-form-section" class="login-register-form-section geneyx_ff">
   <div class="gnx-login-form">
+
     <h1>Welcome to<a href="/"><img src="../img/geneyx.png" style="width:120px"></a></h1>
-    {{#with message}}
-    <h1>{{success}}</h1>
-    <h1>{{error}}</h1>
-    {{/with}}
+    {{#if error}}
+    <div class="alert alert-warning">{{error}}</div>
+    {{/if}}
+
     <h3>Login</h3>
-    <form class="form-horizontal" method="post" action="/authenticate">
+    <form class="form-horizontal" onsubmit="submitAndSaveJwtToken(event)" >
       <div class="gnx-form-group" >
         <div class="input-group">
           <div class="input-group-addon"><i style="width: 12px; height: 12px" class="fa fa-user"></i></div>
-          <input type="text" name="username" class="form-control" placeholder="Username or email" required="required" value="">
+          <input id="loginusername" type="text" name="username" class="form-control" placeholder="Username or email" required="required" value="">
         </div>
       </div>
       <div class="gnx-form-group">
         <div class="input-group">
           <div class="input-group-addon"><i style="width: 12px; height: 12px" class="fa fa-key"></i></div>
-          <input type="password" name="password" class="form-control" placeholder="Password" required="required">
+          <input id="loginpassword" type="password" name="password" class="form-control" placeholder="Password" required="required">
         </div>
       </div>
       <!-- div class="form-group">

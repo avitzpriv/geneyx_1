@@ -17,6 +17,9 @@ const ownerHelper = require('./helpers/ownerHelper')
 const cors = require('cors')
 const jwtHelper = require('./helpers/jwtHelper')
 
+const _   = require('lodash')
+const bcrypt = require('bcryptjs')
+
 
 const Owner = models.Owner
 const OwnerInfo = models.OwnerInfo
@@ -216,6 +219,57 @@ app.use('/lab', require('./routes/lab'))
 app.use('/signup', require('./routes/signup'))
 
 app.use('/users/', require('./controllers/UserController'))
+
+
+/**
+ * Authenticate a user.
+ */
+const authenticate = (req, res, next) => {
+  const { userName, password } = req.body
+
+  if ( _.isNil(userName) || _.isNil(password) ) {
+    res.render('login')
+    return
+  }
+
+  models.User
+    .findOne({where: {userName: userName}})
+    .then((user) => {
+      if (user) {
+        bcrypt.compare(password, user.password, (err, result) => {
+          
+          if (result === true) {
+            const token = jwtHelper.sign({userType: 'user'}, {issuer: 'Geneyx'})
+            res.writeHead(200, {
+              'Set-Cookie': `ngxtoken=${token};httpOnly=true`,
+              'Content-Type': 'text/plain'
+            })
+            res.end('ok')
+            return
+          } else {
+            res.status(403).json({message: '1 - Username or password is incorrect'})
+          }
+        })
+      } else {
+        const errorMsg = encodeURIComponent('Username and password do not match !!')
+        res.redirect(302, '/users/login?error=' + errorMsg)
+      }
+    })
+}
+
+/**
+ * Display a login screen
+ */
+const login = (req, res, next) => {
+  if (req.query.error) {
+    res.render('login', req.query)
+  } else {
+    res.render('login')
+  }  
+}
+
+app.use('/authenticate', authenticate)
+app.use('/login', login )
 
 
 ///////////////////////////////////////////////////////////////////////////////////
