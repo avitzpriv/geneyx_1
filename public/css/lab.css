@@ -1,0 +1,46 @@
+.gnx-lab {
+  position: relative;
+  width: 100%;
+  height: 650px;
+}
+
+.gnx-lab-menu {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  bottom: 0;
+  width: 15rem;
+  border-right: 1px darkgrey solid;
+  background-color: #f8f8f8;
+}
+
+.gnx-lab-menu-name {
+  width: 80%;
+  height: 3rem;
+  margin: 2rem 0.3rem 0.3rem 0.5rem;
+  padding: 0.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: black;
+  background-color: darkgrey;
+}
+
+.gnx-lab-menu-item {
+  width: 80%;
+  height: 3rem;
+  margin: 2rem 0.3rem 0.3rem 0.5rem;
+  border-radius: 3px;
+  background-color: lightgrey;
+  text-align: center;
+  padding: 0.5rem;
+  color: black;
+  cursor: pointer;
+}
+
+.gnx-lab-body {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 78%;
+}

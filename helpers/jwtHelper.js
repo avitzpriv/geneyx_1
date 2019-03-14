@@ -68,7 +68,9 @@ const verify = (token, option) => {
     return true
   } catch (err) {
     console.log('err: ', err)
-    if (err instanceof JsonWebTokenError) {
+    if (err instanceof jwt.JsonWebTokenError) {
+      return false
+    } else if (err instanceof jwt.TokenExpiredError) {
       return false
     } else {
       throw new Error(`JWT verification error: ${err.message}`)

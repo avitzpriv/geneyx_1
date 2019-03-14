@@ -1,4 +1,5 @@
 
+
 const submitAndSaveJwtToken = (e) => {
 
   const userName = document.getElementById('loginusername')
@@ -12,11 +13,17 @@ const submitAndSaveJwtToken = (e) => {
     },
     body: JSON.stringify({userName: userName.value, password: password.value})
   }).then( (response) => {
+    console.log('response: ', response.body)
     return response.json()
   }).then( (data) => {
-    window.location = '/lab/4/test'
+    console.log('data: ', data)
+    if ( data.userid !== undefined ) {
+      window.location = `/lab/${data.userid}`
+    } else {
+      console.log(`ERROR(1) in login: userid not found`)  
+    }
   }).catch( (err) => {
-    console.log(`ERROR in login: ${err}`)
+    console.log(`ERROR(2) in login: ${err}`)
   })
 
   e.stopPropagation()

@@ -247,7 +247,10 @@ const authenticate = (req, res, next) => {
               'Set-Cookie': `ngxtoken=${token};httpOnly=true`,
               'Content-Type': 'text/plain'
             })
-            res.end('ok')
+            console.log('================================')
+            console.log("user: ", user)
+            console.log('================================')
+            res.end(`{"userid": "${user.LabId}"}`)
             return
           } else {
             res.status(403).json({message: '1 - Username or password is incorrect'})
