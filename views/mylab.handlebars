@@ -7,17 +7,20 @@
     <br>
     <div class="gnx-lab-menu-item"><a href="/"></a>New</div>
     <div class="gnx-lab-menu-item"><a href="/"></a>Upload</div>
-    <div class="gnx-lab-menu-item"><a href="/"></a>Bulk Upload</div>
+    <div class="gnx-lab-menu-item" onclick="document.getElementById('gnxLabUploadBox').style.display='block';"><a href="/"></a>Bulk Upload</div>
+  </div>
+
+  <div id='gnxLabUploadBox' style='display: none;'>
+    <div class='gnx-lab-upload-close' onclick="document.getElementById('gnxLabUploadBox').style.display='none';">X</div>
+    <div class='gnx-lab-upload-label'>Please upload an excel file</div>
+    <form action="{{bulkuploadurl id}}" method="post" enctype="multipart/form-data">
+      <input class="gnx-lab-upload-input" type="file" name="bulkuploadexcel" id="excelToUpload">
+      <input class="gnx-lab-upload-input" type="submit" name="submit" value="Upload">
+    </form>
   </div>
 
   <div class="gnx-lab-body">
     <div class="gnx-lab-owners-list">
-      {{#if statistics}}
-        <h2>Number of owners: {{statistics.numOwners}}</h2>
-        <h3>The oldest owner was born on : {{statistics.minBirth}}</h3>
-        <h3>The youngest owner was born on : {{statistics.maxBirth}}</h3>
-        <h3>Number of females : {{statistics.numFemale}} ; Number of Males : {{statistics.numMale}}</h3>
-      {{/if}}
       {{#if ownersList}}
         {{putlabid id}}
         {{>ownerTable}}

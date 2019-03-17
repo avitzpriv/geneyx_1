@@ -4,6 +4,16 @@
   height: 650px;
 }
 
+.gnx-lab-body {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 78%;
+}
+
+/* Left menu */
+
 .gnx-lab-menu {
   position: absolute;
   top: -1px;
@@ -17,7 +27,7 @@
 .gnx-lab-menu-name {
   width: 80%;
   height: 3rem;
-  margin: 2rem 0.3rem 0.3rem 0.5rem;
+  margin: 0 0.3rem 0.3rem 0.5rem;
   padding: 0.5rem;
   font-weight: 700;
   text-align: center;
@@ -37,10 +47,35 @@
   cursor: pointer;
 }
 
-.gnx-lab-body {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 78%;
+/* Upload box */
+#gnxLabUploadBox {
+  position: fixed;
+  top: 20rem;
+  left: calc((100% - 30%)/2);
+  width: 30%;
+  height: 20rem;
+  z-index: 1000;
+  background-color: beige;
+  border: 1px solid bisque;
+  border-radius: 3px;
+}
+
+.gnx-lab-upload-close {
+  float: right;
+  width: 2rem;
+  height: 2rem;
+  margin: 0.3rem 0.3rem 0 0;
+  padding-left: 0.4rem;
+  margin: 0.3rem 0.3rem 0 0;
+  border: 1px black solid;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.gnx-lab-upload-label {
+  margin: 3rem 0 0 3rem;
+}
+
+.gnx-lab-upload-input {
+  margin: 3rem 0 0 3rem;
 }

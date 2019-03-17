@@ -1,13 +1,65 @@
-const express = require('express');
-const router = express.Router();
-const Sequelize = require('sequelize');
+const _ = require('lodash')
+const express = require('express')
+const router = express.Router()
+const Sequelize = require('sequelize')
+const multer  = require('multer')
+const readXlsxFile = require('read-excel-file/node')
+const fs = require('fs');
 
-const models = require('../models/index');
-const ownCtl = require('../controllers/Owner');
+const models = require('../models/index')
+const ownCtl = require('../controllers/Owner')
+
+const upload = multer({ dest: 'Temp/' })
 
 router.get('/', (req, res) => {
     res.render('mylab')
 });
+
+router.post('/bulkupload/:lab_id',upload.single('bulkuploadexcel'), (req, res) => {
+  console.log('In bulk upload')
+
+  readXlsxFile( fs.createReadStream(req.file.path) )
+    .then( async (rows) => {
+      const job = await createJob()
+
+      console.log('--------------------')
+      _.each(rows, (row) => {
+        if( row[0] === 'Owner ID') { return }
+        const ownerId = row[0]
+        const filePath = row[1]
+        const task = createTask(job.dataValues.id, ownerId, filePath)
+        console.log('Created task: ', task.name)
+
+      })
+    }).catch((err) => {
+      console.log('Failed to read excel file with error: ', err)
+      res.send(500)
+      return
+    })
+  // res.send(200)
+  res.redirect(`/lab/${req.params.lab_id}`)
+})
+
+const createJob = async () => {
+  const job = await models.Job.create({
+                      name: 'upload-files',
+                      userId: 4,
+                      status: 'open'
+                    })
+  console.log('Job created: ', job)
+  return job
+}
+
+const createTask = async (jobId, ownerId, filePath) => {
+  const task = await models.Task.create({
+                      name: `upload-job-${ownerId}`,
+                      jobId: jobId,
+                      status: 'ready',
+                      taskData: `ownerId=${ownerId}&filePath=${filePath}`
+                    })
+  console.log('Task created: ', task)
+  return task
+}
 
 router.get('/:lab_id', (req, res) => {
     var statistics = {}

@@ -19,6 +19,7 @@ const jwtHelper = require('./helpers/jwtHelper')
 const _   = require('lodash')
 const bcrypt = require('bcryptjs')
 const userHelper = require('./helpers/userHelper')
+const runBatchJobs = require('./helpers/jobsHelper')
 
 const Owner = models.Owner
 const OwnerInfo = models.OwnerInfo
@@ -247,9 +248,7 @@ const authenticate = (req, res, next) => {
               'Set-Cookie': `ngxtoken=${token};httpOnly=true`,
               'Content-Type': 'text/plain'
             })
-            console.log('================================')
-            console.log("user: ", user)
-            console.log('================================')
+
             res.end(`{"userid": "${user.LabId}"}`)
             return
           } else {
@@ -277,6 +276,11 @@ const login = (req, res, next) => {
 app.use('/authenticate', authenticate)
 app.use('/login', login )
 
+///////////////////////////////////////////////////////////////////////////////////
+// Set and interval for running regular batch jobs
+///////////////////////////////////////////////////////////////////////////////////
+// setInterval(runBatchJobs, 3000)
+runBatchJobs()
 
 ///////////////////////////////////////////////////////////////////////////////////
 //  For Socket.io

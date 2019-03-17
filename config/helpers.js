@@ -17,6 +17,11 @@ var deleted ='fa fa-trash';
 var aDate = "mm/dd/yyyy";
 var bDate = null;
 var blood='X';
+
+module.exports.bulkuploadurl = function (labid) {
+  return `/lab/bulkupload/${labid}`
+}
+
 module.exports.putlabid = function (optionalValue) {
   labid = '/lab/' + optionalValue;
   //console.log(`putval: ${labid} Optional Value ${''+optionalValue+"/"}`);
