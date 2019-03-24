@@ -64,6 +64,7 @@ function preinitdb() {
   userHelper.createUser('avi', 'avi@geneyx.com', '1234', 3, 1)
   console.log('Createing lab user for Danny')
   userHelper.createUser('dannym', 'danny@geneyx.com', '1234', 3, 1)
+  
 }
 
 function initdb(i=0) {
@@ -149,6 +150,7 @@ function initdb(i=0) {
                                 userRecords.push(userRecord)
                                 console.log(`what is i:${labRecord.id}`)
                                 initdb(i+1)
+
                             }).catch((err) => {
                                 console.log(`Error creating user ${userObj.userName} : ${err}`)
                             })
@@ -280,7 +282,7 @@ app.use('/login', login )
 // Set and interval for running regular batch jobs
 ///////////////////////////////////////////////////////////////////////////////////
 // setInterval(runBatchJobs, 3000)
-runBatchJobs()
+// runBatchJobs()
 
 ///////////////////////////////////////////////////////////////////////////////////
 //  For Socket.io

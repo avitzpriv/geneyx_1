@@ -4,3 +4,4 @@ node_modules/
 /FastQs/*
 *.bat
 /keys/*
+aws-config.json

@@ -32,6 +32,9 @@ module.exports = {
       taskData: {
         type: Sequelize.STRING
       },
+      taskState: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

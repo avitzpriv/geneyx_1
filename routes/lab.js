@@ -18,6 +18,8 @@ router.get('/', (req, res) => {
 router.post('/bulkupload/:lab_id',upload.single('bulkuploadexcel'), (req, res) => {
   console.log('In bulk upload')
 
+
+  // jobId, ownerId, hpoTerms, relation, ethnicity, _gender, filePath
   readXlsxFile( fs.createReadStream(req.file.path) )
     .then( async (rows) => {
       const job = await createJob()
@@ -25,9 +27,14 @@ router.post('/bulkupload/:lab_id',upload.single('bulkuploadexcel'), (req, res) =
       console.log('--------------------')
       _.each(rows, (row) => {
         if( row[0] === 'Owner ID') { return }
-        const ownerId = row[0]
-        const filePath = row[1]
-        const task = createTask(job.dataValues.id, ownerId, filePath)
+        const ownerId   = row[0]
+        const hpoTerms  = row[1]
+        const relation  = row[2]
+        const ethnicity = row[3]
+        const gender    = row[4]
+        const filePath  = row[5]
+        const task = createTask(job.dataValues.id, ownerId, hpoTerms,
+                                relation, ethnicity, gender, filePath)
         console.log('Created task: ', task.name)
 
       })
@@ -50,12 +57,32 @@ const createJob = async () => {
   return job
 }
 
-const createTask = async (jobId, ownerId, filePath) => {
+const createTask = async (jobId, ownerId, hpoTerms, relation, ethnicity, _gender, filePath) => {
+  let gender = _gender
+  if (gender.toLowerCase() === 'male') {
+    gender = 1
+  } else if (gender.toLowerCase() === 'female') {
+    gender = 2
+  } else if (gender.toLowerCase() === 'fetus') {
+    gender = 3
+  } else {
+    gender = 0
+  }
+
+  const taskData = {
+    ownerId: ownerId,
+    hpoTerms: hpoTerms,
+    relation: relation,
+    ethnicity: ethnicity,
+    gender: gender,
+    filePath: filePath
+  }
+
   const task = await models.Task.create({
                       name: `upload-job-${ownerId}`,
                       jobId: jobId,
                       status: 'ready',
-                      taskData: `ownerId=${ownerId}&filePath=${filePath}`
+                      taskData: JSON.stringify(taskData)
                     })
   console.log('Task created: ', task)
   return task
