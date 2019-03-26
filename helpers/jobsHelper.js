@@ -1,8 +1,10 @@
+// const sequelize = require('sequelize')
 const models = require('../models/index')
+const sequelize = models.sequelize
 const s3sdk = require('./s3sdkHelper')
 
 const runJobNextTask = () => {
-  console.log('runJobs is running ...')
+
 
   models.Task.findOne({
     where: {status: 'ready'},
@@ -20,7 +22,8 @@ const runTask = (task) => {
   console.log("Start task")
   console.log('=========================')
   const {ownerId, hpoTerms, relation, 
-         ethnicity, gender, filePath} = JSON.parse( task.taskData )
+         ethnicity, gender, filePath} = JSON.parse( task.task_data )
+  const taskId = task.id
 
   /**
    * This one is a handfull:
@@ -32,30 +35,36 @@ const runTask = (task) => {
    *   3 - Update the Genome owner details
    * These last three are handled using a transaction.
    */
-  s3sdk.startMultipartUpload(task.id, filePath)
+  s3sdk.startMultipartUpload(taskId, filePath)
         .then((doneParams) =>
         {
-
-          sequelize.transaction(t => {
-            return models.Task.update(
-              {status: 'done'},
-              {where: {id: taskId}, transaction: t}
+          console.log('jobsHelper - upload task is done')
+          sequelize.transaction(async (t) => {
+              console.log('jobsHelper - Update task with ID: ', taskId)
+              return await models.Task.update(
+                {status: 'done'},
+                {where: {id: taskId}, transaction: t}
             )
             .then( async () => {
-
+ 
+              console.log('jobsHelper - check Job')
               const liveTasksNum = await models.Task.count(
-                {where: {jobId: task.jobId,
+                {where: {job_id: task.job_id,
                  $or: [ 
                         {status: {$eq: 'ready'}},
                         {status: {$eq: 'running'}},
                         {status: {$eq: 'rerun'}},
-                      ]}})
+                      ]}, transaction: t})
+              console.log(liveTasksNum)
 
               const errorTasksNum = await models.Task.count(
-                {where: {jobId: task.jobId, status: 'error'}})
+                {where: {job_id: task.job_id, status: 'error'}, transaction: t})
 
               let stat
               let errorMsg = ''
+
+              console.log(`jobsHelper - live tasks: ${liveTasksNum}, tasks with errors: ${errorTasksNum}`)
+
               if (liveTasksNum === 0) {
                 if (errorTasksNum > 0) {
                   stat = 'error'
@@ -63,15 +72,18 @@ const runTask = (task) => {
                   stat = 'done'
                   errorMsg = 'Failed tasks'
                 }
-                return models.Job.update({status: stat, errorMsg: errorMsg}, {where: {id: task.jobId}, transaction: t})
+                console.log('jobsHelper - update job')
+                return models.Job.update({status: stat, error_message: errorMsg}, {where: {id: task.job_id}, transaction: t})
               }
+
+              console.log('jobsHelper - not updating job')
               return 'Nothing to do'
             })
             .then(() => {
-              createOwner( relation, ethnicity, gender, doneParams)
+              console.log('jobsHelper - Update owner')
               return models.Owner.create(
                 {
-                  identity: ownerId, hopTerms: hpoTerms, relation: relation,
+                  identity: ownerId, hop_terms: hpoTerms, relation: relation,
                   ethnicity: ethnicity, gender: gender
                 }, {transaction: t}
               )
@@ -83,22 +95,25 @@ const runTask = (task) => {
           .catch( err => {
             errorMsg = `Trasaction failed at end of task with error: ${err}`
             console.warn(errorMsg)
+            console.log(err.stack)
             models.Task.update(
-              {status: 'error', errorMsg = errorMsg},
+              {status: 'error', error_message: errorMsg},
               {where: {id: taskId}})
           })
         })
         .catch( errMsg => {
           errorMsg = `Multipart upload failed with error: ${errMsg}`
           console.warn(errorMsg)
+          console.log(errMsg.stack)
           models.Task.update(
-            {status: 'rerun', errorMsg = errorMsg},
+            {status: 'rerun', error_message: errorMsg},
             {where: {id: taskId}})
         })
-
-  console.log('=========================')
-  console.log("End task")
-  console.log('=========================')
+        .finally(() => {
+          console.log('=========================')
+          console.log("End task")
+          console.log('=========================')
+        })
 }
 
 const updateTask = async (taskId, status, msg) => {

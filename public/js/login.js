@@ -1,5 +1,4 @@
 
-
 const submitAndSaveJwtToken = (e) => {
 
   const userName = document.getElementById('loginusername')
@@ -17,10 +16,10 @@ const submitAndSaveJwtToken = (e) => {
     return response.json()
   }).then( (data) => {
     console.log('data: ', data)
-    if ( data.userid !== undefined ) {
-      window.location = `/lab/${data.userid}`
+    if ( data.labid != null && data.labid != undefined ) {
+      window.location = `/lab/${data.labid}`
     } else {
-      console.log(`ERROR(1) in login: userid not found`)  
+      console.log(`ERROR(1) in login: labid not found`)  
     }
   }).catch( (err) => {
     console.log(`ERROR(2) in login: ${err}`)

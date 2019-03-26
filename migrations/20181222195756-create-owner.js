@@ -17,7 +17,7 @@ module.exports = {
       blood_type: { type: Sequelize.INTEGER },
       property1: { type: Sequelize.STRING },
       property2: { type: Sequelize.STRING },
-      hpoTerms: { type: Sequelize.STRING },
+      hpo_terms: { type: Sequelize.STRING },
       ethnicity: { type: Sequelize.STRING },
       createdAt: {
         allowNull: false,

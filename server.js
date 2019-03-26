@@ -241,6 +241,7 @@ const authenticate = (req, res, next) => {
   models.User
     .findOne({where: {userName: userName}})
     .then((user) => {
+
       if (user) {
         bcrypt.compare(password, user.password, (err, result) => {
           
@@ -251,7 +252,7 @@ const authenticate = (req, res, next) => {
               'Content-Type': 'text/plain'
             })
 
-            res.end(`{"userid": "${user.LabId}"}`)
+            res.end(`{"labid": "${user.LabId}"}`)
             return
           } else {
             res.status(403).json({message: '1 - Username or password is incorrect'})
@@ -282,7 +283,7 @@ app.use('/login', login )
 // Set and interval for running regular batch jobs
 ///////////////////////////////////////////////////////////////////////////////////
 // setInterval(runBatchJobs, 3000)
-// runBatchJobs()
+runBatchJobs()
 
 ///////////////////////////////////////////////////////////////////////////////////
 //  For Socket.io

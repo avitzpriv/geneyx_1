@@ -19,13 +19,13 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
-      userId: {
+      user_id: {
         type: Sequelize.INTEGER
       },
       status: {
         type: Sequelize.STRING
       },
-      errorMessage: {
+      error_message: {
         type: Sequelize.STRING
       },
       createdAt: {

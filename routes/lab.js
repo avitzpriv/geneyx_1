@@ -26,7 +26,7 @@ router.post('/bulkupload/:lab_id',upload.single('bulkuploadexcel'), (req, res) =
 
       console.log('--------------------')
       _.each(rows, (row) => {
-        if( row[0] === 'Owner ID') { return }
+        if( row[0] === 'fastq_file_id') { return }
         const ownerId   = row[0]
         const hpoTerms  = row[1]
         const relation  = row[2]
@@ -70,19 +70,19 @@ const createTask = async (jobId, ownerId, hpoTerms, relation, ethnicity, _gender
   }
 
   const taskData = {
-    ownerId: ownerId,
-    hpoTerms: hpoTerms,
+    owner_id: ownerId,
+    hpo_terms: hpoTerms,
     relation: relation,
     ethnicity: ethnicity,
     gender: gender,
-    filePath: filePath
+    file_path: filePath
   }
 
   const task = await models.Task.create({
                       name: `upload-job-${ownerId}`,
-                      jobId: jobId,
+                      job_id: jobId,
                       status: 'ready',
-                      taskData: JSON.stringify(taskData)
+                      task_data: JSON.stringify(taskData)
                     })
   console.log('Task created: ', task)
   return task

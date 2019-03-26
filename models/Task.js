@@ -11,10 +11,12 @@ const STATUS_ERROR   = 'error'
 module.exports = (sequelize, DataTypes) => {
   const Task = sequelize.define('Task', {
     name: { type: DataTypes.STRING },
-    jobId: {type: Sequelize.INTEGER },
+    job_id: {type: Sequelize.INTEGER },
     status: {type: Sequelize.STRING },
-    numReruns: {type: Sequelize.INTEGER, defaultValue: 0}, 
-    taskData: {type: Sequelize.STRING },
+    error_message: {type: Sequelize.STRING },
+    num_reruns: {type: Sequelize.INTEGER, defaultValue: 0}, 
+    task_data: {type: Sequelize.STRING },
+    task_state: {type: Sequelize.STRING },
     createdAt: {type: Sequelize.DATE },
     updatedAt: {type: Sequelize.DATE},
   }, {logging:true})

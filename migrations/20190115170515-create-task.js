@@ -17,22 +17,22 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
-      jobId: {
+      job_id: {
         type: Sequelize.INTEGER
       },
       status: {
         type: Sequelize.STRING
       },
-      errorMessage: {
+      error_message: {
         type: Sequelize.STRING
       },
-      numReruns: {
+      num_reruns: {
         type: Sequelize.INTEGER
       },
-      taskData: {
+      task_data: {
         type: Sequelize.STRING
       },
-      taskState: {
+      task_state: {
         type: Sequelize.STRING
       },
       createdAt: {
