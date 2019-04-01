@@ -16,18 +16,14 @@ router.get('/', (req, res) => {
 })
 
 router.get('/search/:lab_id', (req, res) => {
-  console.log('In search')
   let gender = req.query.gender
   const hpo = req.query.hpo_term
   const ethnicity = req.query.ethnicity
   const labId = req.query.lab_id
   const labName = req.query.lab_name
 
-  console.log('gender: ', gender, ', hpo: ', hpo, ', ethnicity: ', ethnicity)
-
   const wherePart = {}
   if (!_.isEmpty(gender)) {
-    console.log('gender: >>>', gender, '<<< , ', typeof gender)
     wherePart.gender = genderStrToInt(gender.toLowerCase())
   }
   if (!_.isEmpty(ethnicity)) {
@@ -36,8 +32,6 @@ router.get('/search/:lab_id', (req, res) => {
   if (!_.isEmpty(hpo)) {
     wherePart.hpo_terms = {[Sequelize.Op.like]: `%${hpo}%`}
   }
-
-  console.log('wherepart: ', wherePart)
 
   models.Owner.findAll({
     where: wherePart,
@@ -58,11 +52,8 @@ router.get('/search/:lab_id', (req, res) => {
       })
     })
 
-    console.log("=========================")
-    console.log('owner: ', ownersList)
-    console.log("=========================")
-
     res.render('mylab', { name: labName, id: labId, ownersList: ownersList })
+    return
   })
   .catch( err => {
     console.error('Error in search: ', err)

@@ -15,6 +15,11 @@ const progressBar = (req, res, next) => {
     limit: 1
   }).then( job => {
 
+    if (job === null) {
+      res.status(200).json({})
+      return
+    }
+
     models.Task.findAll({
       attributes: ['status', [sequelize.fn('count', sequelize.col('status')), 'cnt']],
       where: {job_id: job.id},
@@ -29,10 +34,12 @@ const progressBar = (req, res, next) => {
       res.status(200).json(result)
     })
     .catch(err => {
+      console.error(err)
       res.status(500).json({status: 'error', message: err.message})  
     })
   })
   .catch(err => {
+    console.error(err)
     res.status(500).json({status: 'error', message: err.message})  
   })
 }

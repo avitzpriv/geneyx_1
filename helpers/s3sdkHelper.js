@@ -90,8 +90,6 @@ const startMultipartUpload = (taskId, _filePath) => {
           where: {id: taskId}
         })
 
-        console.log('>>>>>>>>>>>>>>>>>>>> 1')
-
         uploadPart(s3, multipart, partParams, 1, multipartMap, resolve, reject)
         concurrentlyUploading++
       }
@@ -102,7 +100,7 @@ const startMultipartUpload = (taskId, _filePath) => {
 const uploadPart = (s3, multipart, partParams, tryNum, multipartMap, resolve, reject) => {
   var tryNum = tryNum || 1
   s3.uploadPart(partParams, (multiErr, mData) => {
-    console.log('>>>>>>>>>>>>>>>>>>>> 2')
+
     if (multiErr){
       let msg = `multiErr, upload part error: ${multiErr}`
       if (tryNum < maxUploadTries) {

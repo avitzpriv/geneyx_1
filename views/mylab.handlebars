@@ -3,7 +3,7 @@
 
 <div class="gnx-lab">
   <div class="gnx-lab-menu">
-    <div class="gnx-lab-menu-name">{{name}}</div>
+    <div id="backToHome" class="gnx-lab-menu-name">{{name}}</div>
     <br>
     <div class="gnx-lab-menu-item"><a href="/"></a>New</div>
     <div class="gnx-lab-menu-item"><a href="/"></a>Upload</div>
@@ -21,7 +21,7 @@
 
   <div class="gnx-lab-body">
     <div class="gnx-lab-search-cont">
-      <form action="{{searchownersurl id}}" method="get">
+      <form action="{{searchownersurl id}}" method="get" id="searchForm">
         <div class='gnx-lab-search-params'>
           <label class='gnx-lab-search-label'>
             Gender
@@ -35,11 +35,12 @@
             Ethnicity
             <input class="gnx-lab-search-input" type="text" name="ethnicity" id="inputs-ethnicity">
           </label>
-          <input type="hidden" name="lab_id" value="{{id}}">
+          <input type="hidden" name="lab_id" value="{{id}}" id='labId'>
           <input type="hidden" name="lab_name" value="{{name}}">
         </div>
         <div class='gnx-lab-search-submit-cont'>
           <input class="gnx-lab-search-submit" type="submit" name="submit" value="Search">
+          <div id="clearSearch" class="gnx-lab-search-clear">Clear</div>
         </div>
       </form>
     </div>

@@ -65,10 +65,25 @@
   float: right;
 }
 
-.gnx-lab-search-submit, input[type=submit] {
+.input[type=submit] {
   width: 8rem;
   height: 2rem;
   margin: 2rem 0.3rem 0.3rem 0rem;
+  border-style: none;
+  border-radius: 3px;
+  background-color: darkgrey;
+  text-align: center;
+  padding: 0.5rem;
+  color: black;
+  cursor: pointer;
+}
+
+#clearSearch {
+  display: inline-block;
+  width: 8rem;
+  height: 1rem;
+  margin: 2rem 0.3rem 0.3rem 0rem;
+  font: 400 13.3333px Arial;
   border-style: none;
   border-radius: 3px;
   background-color: darkgrey;
@@ -117,7 +132,7 @@ table, th, td {
   top: 20rem;
   left: calc((100% - 30%)/2);
   width: 30%;
-  height: 20rem;
+  height: 15rem;
   z-index: 1000;
   background-color: beige;
   border: 1px solid bisque;
@@ -126,20 +141,32 @@ table, th, td {
 
 .gnx-lab-upload-close {
   float: right;
-  width: 2rem;
-  height: 2rem;
+  width: 15px;
+  height: 20px;
   margin: 0.3rem 0.3rem 0 0;
   padding-left: 0.4rem;
-  margin: 0.3rem 0.3rem 0 0;
   border: 1px black solid;
-  border-radius: 10px;
+  border-radius: 20px;
   cursor: pointer;
 }
 
 .gnx-lab-upload-label {
-  margin: 3rem 0 0 3rem;
+  margin: 3rem 0 0 1rem;
 }
 
 .gnx-lab-upload-input {
-  margin: 3rem 0 0 3rem;
+  margin: 3rem 0 0 1rem;
+}
+
+.gnx-lab-search-submit {
+  width: 8rem;
+  height: 2rem;
+  margin: 2rem 0.3rem 0.3rem 1rem;
+  border-style: none;
+  border-radius: 3px;
+  background-color: darkgrey;
+  text-align: center;
+  padding: 0.5rem;
+  color: black;
+  cursor: pointer;
 }

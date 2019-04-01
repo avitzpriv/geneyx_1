@@ -55,7 +55,6 @@ const runTask = (task) => {
   console.log('=========================')
   const {owner_id, hpo_terms, relation, 
          ethnicity, gender, file_path} = JSON.parse( task.task_data )
-  console.log('filePath: ', file_path  )
   const taskId = task.id
 
   /**
@@ -116,7 +115,7 @@ const runTask = (task) => {
               console.log('jobsHelper - Update owner')
               return models.Owner.create(
                 {
-                  identity: owner_id, hop_terms: hpo_terms, relation: relation,
+                  identity: owner_id, hpo_terms: hpo_terms, relation: relation,
                   ethnicity: ethnicity, gender: gender
                 }, {transaction: t}
               )
