@@ -2,27 +2,60 @@
 const models = require('../models/index')
 const sequelize = models.sequelize
 const s3sdk = require('./s3sdkHelper')
+const _ = require('lodash')
 
 const runJobNextTask = () => {
 
+  console.log('runJobNextTask() - Try to run task')
+  models.Task.count({
+    where: {status: 'running'}
+  }).then( async num => {
 
-  models.Task.findOne({
-    where: {status: 'ready'},
-    order: [['createdAt', 'DESC']],
-    limit: 1
-  }).then((res) => {
-    runTask(res)
-  }).catch((err) => {
-    console.error(err)
+    // Do not run if there's another upload running
+    if (num > 0) {
+      console.log('runJobNextTask() - Another task running')
+      return
+    }
+
+    // Look for the next that is ready task
+    const reruntask = await models.Task.findOne({
+      where: {status: 'rerun'},
+      order: [['createdAt', 'DESC']],
+      limit: 1
+    })
+    if (reruntask !== null) {
+      if (reruntask.num_reruns >= 2) {
+        
+      }
+      console.log('runJobNextTask() - Running task: ')
+      runTask(reruntask)
+      return
+    }
+
+    // Look for the next that is ready task
+    const readytask = await models.Task.findOne({
+                        where: {status: 'ready'},
+                        order: [['createdAt', 'DESC']],
+                        limit: 1
+                      })
+    if (readytask !== null) {
+      console.log('runJobNextTask() - Running task: ')
+      runTask(readytask)
+      return
+    }
+
+    console.log('runJobNextTask() - No tasks in queue')  
+    return
   })
 }
 
 const runTask = (task) => {
   console.log('=========================')
-  console.log("Start task")
+  console.log("Start task: ", JSON.stringify(task))
   console.log('=========================')
-  const {ownerId, hpoTerms, relation, 
-         ethnicity, gender, filePath} = JSON.parse( task.task_data )
+  const {owner_id, hpo_terms, relation, 
+         ethnicity, gender, file_path} = JSON.parse( task.task_data )
+  console.log('filePath: ', file_path  )
   const taskId = task.id
 
   /**
@@ -35,7 +68,7 @@ const runTask = (task) => {
    *   3 - Update the Genome owner details
    * These last three are handled using a transaction.
    */
-  s3sdk.startMultipartUpload(taskId, filePath)
+  s3sdk.startMultipartUpload(taskId, file_path)
         .then((doneParams) =>
         {
           console.log('jobsHelper - upload task is done')
@@ -83,7 +116,7 @@ const runTask = (task) => {
               console.log('jobsHelper - Update owner')
               return models.Owner.create(
                 {
-                  identity: ownerId, hop_terms: hpoTerms, relation: relation,
+                  identity: owner_id, hop_terms: hpo_terms, relation: relation,
                   ethnicity: ethnicity, gender: gender
                 }, {transaction: t}
               )
@@ -106,7 +139,7 @@ const runTask = (task) => {
           console.warn(errorMsg)
           console.log(errMsg.stack)
           models.Task.update(
-            {status: 'rerun', error_message: errorMsg},
+            {status: 'rerun', error_message: errorMsg, num_reruns: task.num_reruns + 1},
             {where: {id: taskId}})
         })
         .finally(() => {
@@ -114,17 +147,6 @@ const runTask = (task) => {
           console.log("End task")
           console.log('=========================')
         })
-}
-
-const updateTask = async (taskId, status, msg) => {
-  let upd = {}
-  if (status === 'error') {
-    upd.status = 'error'
-    upd.errorMsg = msg
-  } else {
-    upd.status = 'done'
-  }
-  await models.Task.update(upd, {where: {id: taskId}})
 }
 
 module.exports = runJobNextTask

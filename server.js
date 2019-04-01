@@ -219,12 +219,10 @@ app.get('/', (req, res) => {
 })
 
 app.use('/admin/', require('./routes/admin'))
-
 app.use('/lab', require('./routes/lab'))
-
 app.use('/signup', require('./routes/signup'))
-
 app.use('/users/', require('./controllers/UserController'))
+app.use('/jobs/', require('./controllers/JobsController'))
 
 
 /**
@@ -280,9 +278,10 @@ app.use('/authenticate', authenticate)
 app.use('/login', login )
 
 ///////////////////////////////////////////////////////////////////////////////////
-// Set and interval for running regular batch jobs
+// Set and interval for running regular batch jobs.
+// Run every 2 minutes
 ///////////////////////////////////////////////////////////////////////////////////
-// setInterval(runBatchJobs, 3000)
+// setInterval(runBatchJobs, 1000 * 60 * 2)
 runBatchJobs()
 
 ///////////////////////////////////////////////////////////////////////////////////

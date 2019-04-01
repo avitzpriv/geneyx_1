@@ -35,6 +35,12 @@
   background-color: darkgrey;
 }
 
+#progressBar {
+  position: absolute;
+  bottom: 1rem;
+  right: 5rem;
+}
+
 .gnx-lab-menu-item {
   width: 80%;
   height: 3rem;

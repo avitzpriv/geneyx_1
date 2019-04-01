@@ -26,7 +26,8 @@ const middleWareVerify = (req, res, next) => {
     '/css',
     '/img',
     '/js/login.js',
-    '/users/create_user'
+    '/users/create_user',
+    '/js/mylab.js'
   ]
   /** Some paths should not be checked */
   if (_.find(excemptPaths, e => req.url.startsWith(e))) {
