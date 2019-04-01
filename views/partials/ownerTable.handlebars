@@ -1,57 +1,28 @@
-<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-  <div class="container">
-  <h3>Patients List</h3>
-    <div class="row col-md-8 ">
-      <table id="customerTable" class="table table-bordered table-jhover table-responsive">
-        <thead>
-          <tr>
-            <th></th>
-            <th width="15%">Patient Id</th>
-<!--            <th>E-Mail</th>-->
-{{#if admin}}
-            <th>Active</th>
-            <th>Deleted</th>
-{{/if}}
-            <th>Created at</th>
-            <th>Birth Date</th>
-            <th width="5%">Blood type</th>
-            <th>Additional Info I</th>
-            <th>Additional Info II</th>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each ownersList}}
-
-          {{#if gender}}
-          {{setFemale}}
-          {{else}}
-          {{/if}}
-          {{#if deleted}}
-          {{setDel}}
-          {{/if}}
-          {{setADate createdAt}}
-          {{setBDate birth_date}}
-          {{setBlood blood_type}}
-
-          {{#if deleted}}
-          {{clearDel}}
-          {{else}}
-          <tr>
-            <td><i class='{{getGenderIcon}}' style="font-size:18px;"></i></td>
-            <td width="15%"><a href='owners/{{id}}'>   {{identity}}</a></td>
-            <td>{{getADate}}</td>
-            <td>{{getBDate}}</td>>
-            <td width="5%">{{getBlood}}</td>
-            <td>{{property1}}</td>
-            <td>{{property2}}</td>
-            <td><a href='{{getlabid}}/owners/{{id}}/reverse'>
-            <i class='{{getDel}}''></i></a></td>
-            <td><a href='{{getlabid}}/owners/{{id}}/edit'><i class="fa fa-edit"></i></a></td>
-          </tr>
-          {{/if}}
-          {{/each}}
-        </tbody>
-      </table>
-    </div>
+<h3>Owners List</h3>
+<table class='gnx-table'>
+  <thead>
+    <col width='5%'>
+    <col width='5%'>
+    <col width='30%'>
+    <col width='30%'>
+    <col width='30%'>
+    <tr>
+      <th>Patient Id</th>
+      <th>Gender</th>
+      <th>Ethnicity</th>
+      <th>HPO</th>
+      <th>File</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each ownersList}}
+      <tr>
+        <td>{{ownerId}}</td>
+        <td>{{gender}}</td>
+        <td>{{ethnicity}}</td>
+        <td>{{hpo}}</td>
+        <td><a href={{filePath}}>Link to file</a></td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>

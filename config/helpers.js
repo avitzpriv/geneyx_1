@@ -22,6 +22,10 @@ module.exports.bulkuploadurl = function (labid) {
   return `/lab/bulkupload/${labid}`
 }
 
+module.exports.searchownersurl = function (labid) {
+  return `/lab/search/${labid}`
+}
+
 module.exports.putlabid = function (optionalValue) {
   labid = '/lab/' + optionalValue;
   //console.log(`putval: ${labid} Optional Value ${''+optionalValue+"/"}`);

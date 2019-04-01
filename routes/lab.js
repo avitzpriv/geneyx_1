@@ -13,7 +13,66 @@ const upload = multer({ dest: 'Temp/' })
 
 router.get('/', (req, res) => {
     res.render('mylab')
-});
+})
+
+router.get('/search/:lab_id', (req, res) => {
+  console.log('In search')
+  let gender = req.query.gender.toLowerCase()
+  const hpo = req.query.hpo_term
+  const ethnicity = req.query.ethnicity
+  const labId = req.query.lab_id
+  const labName = req.query.lab_name
+
+  console.log('gender: ', gender, ', hpo: ', hpo, ', ethnicity: ', ethnicity)
+
+  const wherePart = {}
+  if (!_.isEmpty(gender)) {
+    console.log('gender: >>>', gender, '<<< , ', typeof gender)
+    wherePart.gender = genderStrToInt(gender)
+  }
+  if (!_.isEmpty(ethnicity)) {
+    wherePart.ethnicity = {[Sequelize.Op.like]: `%${ethnicity}%`}
+  }
+  if (!_.isEmpty(hpo)) {
+    wherePart.hpo_terms = {[Sequelize.Op.like]: `%${hpo}%`}
+  }
+
+  console.log('wherepart: ', wherePart)
+
+  models.Owner.findAll({
+    where: wherePart,
+    order: [['createdAt', 'DESC']],
+  })
+  .then( result => {
+    
+
+
+    const ownersList = []
+    _.each(result, owner => {
+      ownersList.push({
+        ownerId: owner.identiry,
+        createdAt: owner.createdAt,
+        gender: genderIntToStr(owner.gender),
+        ethnicity: owner.ethnicity,
+        hpo: owner.hpo,
+        filePath: 'https//path.to.file.of.owner'
+      })
+    })
+
+    console.log("=========================")
+      console.log('owner: ', ownersList)
+      console.log("=========================")
+
+      res.render('mylab', { name: labName, id: labId, ownersList: ownersList })
+
+
+  })
+  .catch( err => {
+    console.error('Error in search: ', err)
+    res.send(500)
+  })
+})
+
 
 router.post('/bulkupload/:lab_id',upload.single('bulkuploadexcel'), (req, res) => {
   console.log('In bulk upload')
@@ -57,18 +116,33 @@ const createJob = async () => {
   return job
 }
 
-const createTask = async (jobId, ownerId, hpoTerms, relation, ethnicity, _gender, filePath) => {
-  let gender = _gender
-  if (gender.toLowerCase() === 'male') {
-    gender = 1
-  } else if (gender.toLowerCase() === 'female') {
-    gender = 2
-  } else if (gender.toLowerCase() === 'fetus') {
-    gender = 3
+const genderIntToStr = (gender) => {
+  if (gender === 1) {
+    return 'Male'
+  } else if (gender === 2) {
+    return 'Female'
+  } else if (gender === 3) {
+    return 'Fetus'
   } else {
-    gender = 0
+    return 'na'
   }
+}
 
+const genderStrToInt = (gender) => {
+  if (gender.toLowerCase() === 'male') {
+    return 1
+  } else if (gender.toLowerCase() === 'female') {
+    return 2
+  } else if (gender.toLowerCase() === 'fetus') {
+    return 3
+  } else {
+    return 0
+  }
+}
+
+const createTask = async (jobId, ownerId, hpoTerms, relation, ethnicity, _gender, filePath) => {
+  let gender = genderStrToInt( _gender )
+  
   const taskData = {
     owner_id: ownerId,
     hpo_terms: hpoTerms,
