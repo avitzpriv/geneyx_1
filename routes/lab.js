@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
 
 router.get('/search/:lab_id', (req, res) => {
   console.log('In search')
-  let gender = req.query.gender.toLowerCase()
+  let gender = req.query.gender
   const hpo = req.query.hpo_term
   const ethnicity = req.query.ethnicity
   const labId = req.query.lab_id
@@ -28,7 +28,7 @@ router.get('/search/:lab_id', (req, res) => {
   const wherePart = {}
   if (!_.isEmpty(gender)) {
     console.log('gender: >>>', gender, '<<< , ', typeof gender)
-    wherePart.gender = genderStrToInt(gender)
+    wherePart.gender = genderStrToInt(gender.toLowerCase())
   }
   if (!_.isEmpty(ethnicity)) {
     wherePart.ethnicity = {[Sequelize.Op.like]: `%${ethnicity}%`}
@@ -46,11 +46,10 @@ router.get('/search/:lab_id', (req, res) => {
   .then( result => {
     
 
-
     const ownersList = []
     _.each(result, owner => {
       ownersList.push({
-        ownerId: owner.identiry,
+        ownerId: owner.identity,
         createdAt: owner.createdAt,
         gender: genderIntToStr(owner.gender),
         ethnicity: owner.ethnicity,
@@ -60,12 +59,10 @@ router.get('/search/:lab_id', (req, res) => {
     })
 
     console.log("=========================")
-      console.log('owner: ', ownersList)
-      console.log("=========================")
+    console.log('owner: ', ownersList)
+    console.log("=========================")
 
-      res.render('mylab', { name: labName, id: labId, ownersList: ownersList })
-
-
+    res.render('mylab', { name: labName, id: labId, ownersList: ownersList })
   })
   .catch( err => {
     console.error('Error in search: ', err)
@@ -177,7 +174,7 @@ router.get('/:lab_id', (req, res) => {
                             statistics.numMale = cnt - statistics.numFemale;
                         }
                     }
-                    res.render('mylab', { name: lab.name, id: lab.id, ownersList: ownerList })
+                    res.render('mylab', { name: lab.name, id: lab.id, ownersList: null })
                     // res.render('mylab', { name: lab.name, id: lab.id, Test: true })
                 }).catch(err => console.log(err))
             }).catch(err => console.log(err))
