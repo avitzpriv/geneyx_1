@@ -12,6 +12,12 @@ Path to file upload:
 
 To run sequelize:
   sequelize --config ./db_config.js db:migrate
+  sequelize --config ./db_config.js db:migrate:undo
+
+To run the seeds files:
+  sequelize --config ./db_config.js db:seed:all
+To undo seeds:
+  sequelize --config ./db_config.js db:seed:undo:all
   
   
   

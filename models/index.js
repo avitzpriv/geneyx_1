@@ -31,7 +31,7 @@ Object.keys(db).forEach(modelName => {
 });
 
 db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+
 
 // one of my trials **AviY**
 // //Models/tables

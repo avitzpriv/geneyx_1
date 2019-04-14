@@ -10,9 +10,7 @@ module.exports = {
       },
       url: { type: Sequelize.STRING, allowNull: false },
       /* The file meta data is here to capture all information needed to actually locate
-         the file.
-         
-       */
+         the file. */
       fileMetaData: { type: Sequelize.STRING, allowNull: false },
       ownerId: { type: Sequelize.INTEGER, allowNull: false  },
       uploadDate: { type: Sequelize.DATE },

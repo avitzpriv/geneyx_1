@@ -242,7 +242,6 @@ const authenticate = (req, res, next) => {
 
       if (user) {
         bcrypt.compare(password, user.password, (err, result) => {
-          
           if (result === true) {
             const token = jwtHelper.sign({userType: 'user'}, {issuer: 'Geneyx'})
             res.writeHead(200, {
@@ -257,8 +256,9 @@ const authenticate = (req, res, next) => {
           }
         })
       } else {
-        const errorMsg = encodeURIComponent('Username and password do not match !!')
-        res.redirect(302, '/users/login?error=' + errorMsg)
+        const errorMsg = 'Username and password do not match !!'
+        console.log(errorMsg)
+        res.redirect(302, '/users/login?error=' + encodeURIComponent(errorMsg))
       }
     })
 }

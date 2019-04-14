@@ -1,11 +1,7 @@
 const Sequelize = require('sequelize')
-// const bcrypt = require('bcryptjs')
 'use strict'
 module.exports = (sequelize, DataTypes) => {
   const Owner = sequelize.define('Owner', {
-    // name: { type: DataTypes.STRING },
-    // email : { type: DataTypes.STRING, unique: true, validate: {isEmail: true } }, 
-    // password: { type: Sequelize.STRING, allowNull: false },
     identity: {type: Sequelize.STRING},  // The external id
     active: { type: Sequelize.BOOLEAN, defaultValue: false },
     deleted: { type: Sequelize.BOOLEAN, defaultValue: false },
@@ -22,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   Owner.associate = function(models) {
      models.Owner.belongsToMany(models.Lab, {through: models.LabOwner})
      models.Owner.hasOne(models.User)
+     models.Owner.hasOne(models.File)
   }
 
   return Owner

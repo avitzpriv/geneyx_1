@@ -3,12 +3,12 @@ const Sequelize = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   const File = sequelize.define('File', {
     url: DataTypes.STRING,
-    ownerId: Sequelize.INTEGER,
+    file_meta_data: DataTypes.STRING,
+    OwnerId: Sequelize.INTEGER,
     uploadDate: Sequelize.DATE
   }, {});
   File.associate = function(models) {
-    // associations can be defined here
-    //models.File.belongsTo(models.Owner);
+    models.File.belongsTo(models.Owner);
   };
   return File;
 };

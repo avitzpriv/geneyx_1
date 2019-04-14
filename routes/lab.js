@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
     res.render('mylab')
 })
 
-router.get('/search/:lab_id', (req, res) => {
+router.get('/search/:lab_id', async (req, res) => {
   let gender = req.query.gender
   const hpo = req.query.hpo_term
   const ethnicity = req.query.ethnicity
@@ -33,8 +33,15 @@ router.get('/search/:lab_id', (req, res) => {
     wherePart.hpo_terms = {[Sequelize.Op.like]: `%${hpo}%`}
   }
 
+  const sequelize = require('sequelize')
+
+  const owners = await models.sequelize.query(`select "OwnerId" from "LabOwners" where "LabId" = ${labId}`)
+  const ownerIds = _.map(owners[0], o => o.OwnerId)
+  wherePart.id = {[Sequelize.Op.in]: ownerIds}
+
   models.Owner.findAll({
     where: wherePart,
+    include    : [{ model: models.File, attributes: ['url']}],
     order: [['createdAt', 'DESC']],
   })
   .then( result => {
@@ -47,12 +54,18 @@ router.get('/search/:lab_id', (req, res) => {
         createdAt: owner.createdAt,
         gender: genderIntToStr(owner.gender),
         ethnicity: owner.ethnicity,
-        hpo: owner.hpo,
-        filePath: 'https//path.to.file.of.owner'
+        hpo: owner.hpo_terms,
+        filePath: (owner.File != null ? owner.File.url : null)
       })
     })
 
-    res.render('mylab', { name: labName, id: labId, ownersList: ownersList })
+    res.render('mylab', 
+               { name: labName,
+                 id: labId,
+                 ownersList: ownersList,
+                 gender: gender,
+                hpo: hpo,
+              ethnicity: ethnicity })
     return
   })
   .catch( err => {
@@ -61,17 +74,19 @@ router.get('/search/:lab_id', (req, res) => {
   })
 })
 
-
 router.post('/bulkupload/:lab_id',upload.single('bulkuploadexcel'), (req, res) => {
   console.log('In bulk upload')
 
+  const lab_id = req.params.lab_id
+  if (lab_id === undefined) {
+    console.error('bulkupload: lab_id can not be empty')
+    res.send(500)
+  }
 
-  // jobId, ownerId, hpoTerms, relation, ethnicity, _gender, filePath
   readXlsxFile( fs.createReadStream(req.file.path) )
     .then( async (rows) => {
       const job = await createJob()
 
-      console.log('--------------------')
       _.each(rows, (row) => {
         if( row[0] === 'fastq_file_id') { return }
         const ownerId   = row[0]
@@ -81,7 +96,8 @@ router.post('/bulkupload/:lab_id',upload.single('bulkuploadexcel'), (req, res) =
         const gender    = row[4]
         const filePath  = row[5]
         const task = createTask(job.dataValues.id, ownerId, hpoTerms,
-                                relation, ethnicity, gender, filePath)
+                                relation, ethnicity, gender, filePath,
+                                lab_id)
         console.log('Created task: ', task.name)
 
       })
@@ -105,6 +121,7 @@ const createJob = async () => {
 }
 
 const genderIntToStr = (gender) => {
+  console.log('gender: ', gender)
   if (gender === 1) {
     return 'Male'
   } else if (gender === 2) {
@@ -128,7 +145,7 @@ const genderStrToInt = (gender) => {
   }
 }
 
-const createTask = async (jobId, ownerId, hpoTerms, relation, ethnicity, _gender, filePath) => {
+const createTask = async (jobId, ownerId, hpoTerms, relation, ethnicity, _gender, filePath, lab_id) => {
   let gender = genderStrToInt( _gender )
   
   const taskData = {
@@ -137,7 +154,8 @@ const createTask = async (jobId, ownerId, hpoTerms, relation, ethnicity, _gender
     relation: relation,
     ethnicity: ethnicity,
     gender: gender,
-    file_path: filePath
+    file_path: filePath,
+    lab_id: lab_id
   }
 
   const task = await models.Task.create({

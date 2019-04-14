@@ -2,12 +2,6 @@
 
 const windowReady = () => {
 
-  /** The clear button */
-  const clearBtn = document.getElementById('clearSearch')
-  clearBtn.addEventListener('click', () => {
-    document.getElementById("searchForm").reset();
-  })
-
   /** The progress bar */
   fetch('/jobs/progress_bar')
     .then( response => {

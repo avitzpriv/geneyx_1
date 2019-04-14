@@ -6,44 +6,30 @@ const models = require('../models/index')
 const fs = require('fs')
 const AWS = require('aws-sdk')
 
-// Upload
-const partSize = 1024 * 1024 * 5
+const PART_SIZE = 1024 * 1024 * 5
 const maxUploadTries = 3
 const maxConcurrentUpload = 1
 const TIME_BETWEEN_CHECKS = 5000 // millisecs
 
-/************ Globals *****************/
-// Track number of concurrent upload processes
-let concurrentlyUploading
-
-// How many parts are left
-let numPartsLeft
-
-// Upload start time
-let startTime = new Date()
-
-// How to find the file
-let filePath
-
-// What to call it in S3
-let fileKey
-/*************************************/
-
 /**
  * Entrypoint to S3 multipart upload
  */
-const startMultipartUpload = (taskId, _filePath) => {
+const startMultipartUpload = (_task, _filePath) => {
 
   /** Setup */
-  let partNum = 0
-  filePath = _filePath
-  fileKey = _filePath.split('/').pop()
-  startTime = new Date()
-  concurrentlyUploading = 0
   AWS.config.loadFromPath('./aws-config.json')
-  const s3 = new AWS.S3()
-  const buffer = fs.readFileSync(filePath)
-  numPartsLeft = Math.ceil(buffer.length / partSize)
+
+  const buffer = fs.readFileSync(_filePath)
+
+  const taskStateStr = _task.task_state
+  let {partNum, uploadId} = taskStateStr === null ?
+                            {partNum: 0, uploadId: null} :
+                            JSON.parse(taskStateStr)
+  console.log(`partNum: ${partNum}, uploadId: ${uploadId}`)
+  
+  const fileKey = _filePath.split('/').pop()
+
+  // The datastructure expected by s3 to start multipart
   const multiPartParams = {
     Bucket: process.env.S3_BUCKET,
     Key: fileKey,
@@ -52,60 +38,100 @@ const startMultipartUpload = (taskId, _filePath) => {
   const multipartMap = {
     Parts: []
   }
-  
+
+  const env = {
+    concurrentlyUploading: 0,                      // Track number of concurrent upload processes
+    s3: new AWS.S3(),
+    multipartMap: multipartMap,
+    buffer: buffer,
+    taskId: _task.id,
+    partNum: partNum,
+    uploadId: uploadId,
+    filePath: _filePath,                            // How to find the file
+    fileKey: fileKey,                               // What to call it in S3
+    startTime: new Date(),                          // Upload start time
+    numPartsLeft: Math.ceil(buffer.length / PART_SIZE),  // How many parts are left
+    uploadId: uploadId
+  }
   
   /** Done with setup, start actual upload */
   return new Promise((resolve, reject) => {
-
-    s3.createMultipartUpload(multiPartParams, async (mpErr, multipart) => {
-      if (mpErr) { console.log('Error!', mpErr); reject(`Multipart create error: ${mpErr}`) }
-      console.log("Got upload ID", multipart.UploadId)
-
-      // Grab each partSize chunk and upload it as a part
-      for (var rangeStart = 0 ;rangeStart < buffer.length; rangeStart += partSize) {
-        while (concurrentlyUploading >= maxConcurrentUpload) {
-          console.log(`LOOP concurrentlyUploading: ${concurrentlyUploading}`)
-          console.log('Reached maxConcurrentUpload, will wait')
-          await sleep(TIME_BETWEEN_CHECKS)
-        }
-
-        partNum++
-        
-        const end = Math.min(rangeStart + partSize, buffer.length)
-        const partParams = {
-                Body: buffer.slice(rangeStart, end),
-                Bucket: process.env.S3_BUCKET,
-                Key: fileKey,
-                PartNumber: String(partNum),
-                UploadId: multipart.UploadId
-              }
-
-        // Send a single part
-        console.log('Uploading part: #', partParams.PartNumber, ', Range start:', rangeStart, ', in task: ', taskId)
-
-        await models.Task.update({ 
-          task_state: JSON.stringify({partNum: partNum, uploadId: multipart.UploadId}),
-          status: 'running'
-        }, {
-          where: {id: taskId}
-        })
-
-        uploadPart(s3, multipart, partParams, 1, multipartMap, resolve, reject)
-        concurrentlyUploading++
-      }
-    })
+    if (uploadId !== null && uploadId !== undefined) {
+      uploadPartsRunner({UploadId: uploadId}, env)
+    } else {
+      env.resolve = resolve
+      env.reject = reject
+      env.s3.createMultipartUpload(multiPartParams, createMultipartCallback(env))
+    }
   })
 }
 
-const uploadPart = (s3, multipart, partParams, tryNum, multipartMap, resolve, reject) => {
+/** a closure for the callback for the s3 api. Needed for env */
+const createMultipartCallback = (env) => {
+  return (mpErr, multipart) => {
+    if (mpErr) { console.log('Error!', mpErr); reject(`Multipart create error: ${mpErr}`) }
+    console.log("Got upload ID", multipart.UploadId)
+
+    uploadPartsRunner(multipart, env)
+  }
+}
+
+const uploadPartsRunner = async (multipart, env) => {
+  // Grab each partSize chunk and upload it as a part
+  for (var rangeStart = 0 ;rangeStart < env.buffer.length; rangeStart += PART_SIZE) {
+    console.log('In FOR loop, rangeStart = ', rangeStart, ', buff len: ', env.buffer.length)
+    while (env.concurrentlyUploading >= maxConcurrentUpload) {
+      console.log(`LOOP concurrentlyUploading: ${env.concurrentlyUploading}`)
+      console.log('Reached maxConcurrentUpload, will wait')
+      await sleep(TIME_BETWEEN_CHECKS)
+    }
+
+    env.partNum++
+    
+    // This is the object required by s3.uploadPart
+    const end = Math.min(rangeStart + PART_SIZE, env.buffer.length)
+    const partParams = {
+            Body: env.buffer.slice(rangeStart, end),
+            Bucket: process.env.S3_BUCKET,
+            Key: env.fileKey,
+            PartNumber: String(env.partNum),
+            UploadId: multipart.UploadId
+          }
+
+    // Send a single part
+    console.log('Uploading part: #', partParams.PartNumber, ', Range start:', rangeStart, ', in task: ', env.taskId)
+
+    await models.Task.update({ 
+      task_state: JSON.stringify({partNum: env.partNum, uploadId: multipart.UploadId}),
+      status: 'running'
+    }, {
+      where: {id: env.taskId}
+    })
+
+    console.log('after await')
+
+
+    uploadPart(multipart, partParams, 1, env.multipartMap, env)
+    env.concurrentlyUploading++
+  }
+}
+
+const uploadPart = (multipart, partParams, tryNum, multipartMap, env) => {
   var tryNum = tryNum || 1
+  
+  const s3      = env.s3
+  const taskId  = env.taskId
+  const resolve = env.resolve
+  const reject  = env.reject
+
+  console.log('before s3.uploadPart')
   s3.uploadPart(partParams, (multiErr, mData) => {
 
     if (multiErr){
       let msg = `multiErr, upload part error: ${multiErr}`
       if (tryNum < maxUploadTries) {
         console.warn(`${msg}. Retrying upload of part: #${partParams.PartNumber}`)
-        uploadPart(s3, taskId, multipart, partParams, tryNum + 1, resolve, reject)
+        uploadPart(multipart, partParams, tryNum + 1, env)
       } else {
         msg = `Failed uploading part: #${partParams.PartNumber} with error: ${multiErr}`
         console.warn(msg)
@@ -121,28 +147,36 @@ const uploadPart = (s3, multipart, partParams, tryNum, multipartMap, resolve, re
     console.log("Completed part", partParams.PartNumber)
     console.log('mData', mData)
 
-    concurrentlyUploading--
+    env.concurrentlyUploading--
 
-    if (--numPartsLeft > 0) return // complete only when all parts uploaded
+    if (--env.numPartsLeft > 0) return // complete only when all parts uploaded
     
     const doneParams = {
       Bucket: process.env.S3_BUCKET,
-      Key: fileKey,
-      MultipartUpload: multipartMap,
+      Key: env.fileKey,
+      MultipartUpload: env.multipartMap,
       UploadId: multipart.UploadId
     }
 
     console.log("Completing upload...")
-    completeMultipartUpload(s3, doneParams, resolve, reject)
+    completeMultipartUpload(doneParams, env)
   })
+  console.log('after s3.uploadPart')
 }
 
 const sleep = async (ms) => {
   return new Promise(rslv => setTimeout(rslv, ms))
 }
 
-const completeMultipartUpload = (s3, doneParams, resolve, reject) => {
+const completeMultipartUpload = (doneParams, env) => {
   console.log('In completeMultipartUpload()')
+
+  const s3      = env.s3
+  const startTime  = env.startTime
+  const resolve = env.resolve
+  const reject  = env.reject
+
+  console.log('doneParams: ', doneParams)
   s3.completeMultipartUpload(doneParams, (err, data) => {
     if (err) {
       const msg = `Error while completing multipart upload. S3 error msg: ${err}`

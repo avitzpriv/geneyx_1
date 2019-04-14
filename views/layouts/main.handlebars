@@ -14,13 +14,20 @@
 
   <link rel="stylesheet" href="/css/style.css">
 
+  <script>
+    geneyxLogout = () => {
+      console.log('Logging out')
+      localStorage.removeItem('ngxtoken')
+      window.location='/login'
+    }
+  </script>
 </head>
 
 <body>
   <div class="container-fluid">
     <div class="gnx-navbar">
       <a class="gnx-navbar-logo" href="#"><img src="/img/geneyx.png" style="width:90px;"></a>
-      <a class="gnx-navbar-left" href="#"><img src="/img/user.png"></a>
+      <a class="gnx-navbar-left" href="#"><img src="/img/user.png" onClick="geneyxLogout()"></a>
       <a class="gnx-navbar-left" href="#"><img src="/img/notification.png"></a>
   </div>
 </nav>

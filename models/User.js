@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   User.addHook('beforeValidate', (user, opt) => {
+    console.log('In model User, in beforeValidate()')
     user.password = bcrypt.hashSync(user.password, 10)
     user.email = user.email.toLowerCase()
   })
