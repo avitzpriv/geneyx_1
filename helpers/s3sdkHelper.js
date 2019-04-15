@@ -33,7 +33,7 @@ const startMultipartUpload = (_task, _filePath) => {
   const multiPartParams = {
     Bucket: process.env.S3_BUCKET,
     Key: fileKey,
-    ContentType: 'text/plain'
+    ContentType: 'binary/octet-stream'
   }
   const multipartMap = {
     Parts: []

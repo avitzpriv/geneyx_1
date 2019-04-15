@@ -21,6 +21,7 @@ const bcrypt = require('bcryptjs')
 const userHelper = require('./helpers/userHelper')
 const runBatchJobs = require('./helpers/jobsHelper')
 
+
 const Owner = models.Owner
 const OwnerInfo = models.OwnerInfo
 
@@ -40,7 +41,7 @@ models.sequelize.sync({ force: false }).then((res) => {
     console.log('sync done!!')
     process.argv.forEach(function (val, index, array) {
         console.log(index + ': ' + val);
-        if (val === '-initdb') preinitdb();
+        // if (val === '-initdb') preinitdb();
     });
 }).catch((err) => console.log('err sync:', err));
 
@@ -60,10 +61,10 @@ function preinitdb() {
   prms.push(null)
   initdb()
 
-  console.log('Createing lab user for Avi')
-  userHelper.createUser('avi', 'avi@geneyx.com', '1234', 3, 1)
-  console.log('Createing lab user for Danny')
-  userHelper.createUser('dannym', 'danny@geneyx.com', '1234', 3, 1)
+  // console.log('Createing lab user for Avi')
+  // userHelper.createUser('avi', 'avi@geneyx.com', '1234', 3, 1)
+  // console.log('Createing lab user for Danny')
+  // userHelper.createUser('dannym', 'danny@geneyx.com', '1234', 3, 1)
   
 }
 
@@ -282,7 +283,7 @@ app.use('/login', login )
 // Run every 2 minutes
 ///////////////////////////////////////////////////////////////////////////////////
 // setInterval(runBatchJobs, 1000 * 60 * 2)
-runBatchJobs()
+// runBatchJobs()
 
 ///////////////////////////////////////////////////////////////////////////////////
 //  For Socket.io

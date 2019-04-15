@@ -55,7 +55,8 @@ router.get('/search/:lab_id', async (req, res) => {
         gender: genderIntToStr(owner.gender),
         ethnicity: owner.ethnicity,
         hpo: owner.hpo_terms,
-        filePath: (owner.File != null ? owner.File.url : null)
+        filePath: (owner.File != null ? owner.File.url : null),
+        fileName: `${owner.identity}.fastq`
       })
     })
 
