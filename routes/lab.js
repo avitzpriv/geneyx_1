@@ -55,7 +55,6 @@ router.get('/search/:lab_id', async (req, res) => {
     order: [['createdAt', 'DESC']],
   })
   .then( result => {
-    
 
     const ownersList = []
     _.each(result, owner => {

@@ -4,7 +4,7 @@ const submitAndSaveJwtToken = (e) => {
   const userName = document.getElementById('loginusername')
   const password = document.getElementById('loginpassword')
 
-  fetch('http://localhost:8080/authenticate', {
+  fetch('/authenticate', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',

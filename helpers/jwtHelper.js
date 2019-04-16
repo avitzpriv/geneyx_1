@@ -37,6 +37,11 @@ const middleWareVerify = (req, res, next) => {
 
   /** Get the authorization token */
   const cookies = req.headers.cookie
+  if (_.isNil(cookies)) {
+    res.redirect('/login')
+    return
+  }
+
   const cookiearr = cookies.split('; ')
   const auth = _.find(cookiearr, (coo) => {
     return coo.trim().startsWith('ngxtoken')

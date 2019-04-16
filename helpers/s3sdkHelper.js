@@ -27,6 +27,10 @@ const startMultipartUpload = (_task, _filePath) => {
   let {partNum, uploadId} = taskStateStr === null ?
                             {partNum: 0, uploadId: null} :
                             JSON.parse(taskStateStr)
+  // If failed in a part before then reload it
+  if (partNum > 0) {
+    partNum -= 1
+  }
   console.log(`partNum: ${partNum}, uploadId: ${uploadId}`)
   
   const fileKey = _filePath.split('/').pop()
@@ -58,11 +62,11 @@ const startMultipartUpload = (_task, _filePath) => {
   
   /** Done with setup, start actual upload */
   return new Promise((resolve, reject) => {
+    env.resolve = resolve
+    env.reject = reject
     if (uploadId !== null && uploadId !== undefined) {
       uploadPartsRunner({UploadId: uploadId}, env)
     } else {
-      env.resolve = resolve
-      env.reject = reject
       env.s3.createMultipartUpload(multiPartParams, createMultipartCallback(env))
     }
   })
@@ -80,7 +84,7 @@ const createMultipartCallback = (env) => {
 
 const uploadPartsRunner = async (multipart, env) => {
   // Grab each partSize chunk and upload it as a part
-  for (var rangeStart = 0 ;rangeStart < env.buffer.length; rangeStart += PART_SIZE) {
+  for (var rangeStart = env.partNum ;rangeStart < env.buffer.length; rangeStart += PART_SIZE) {
     console.log('In FOR loop, rangeStart = ', rangeStart, ', buff len: ', env.buffer.length)
     while (env.concurrentlyUploading >= maxConcurrentUpload) {
       console.log(`LOOP concurrentlyUploading: ${env.concurrentlyUploading}`)

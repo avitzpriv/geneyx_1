@@ -108,10 +108,10 @@ const finnalizeOwner = (task, doneParams) => {
         {status: 'done'},
         {where: {id: task.id}}
     )
-    .then( () => { updateJobStatus(task) } )
-    .then( async () => { return await updateOwner(task) } )
-    .then( async (owner) => { return await updateLabOwner(owner, task) } )
+    .then( async () => { return await getOwner(task) })
+    .then( async (owner) => { return await updateOwner(owner, task) } )
     .then( async (owner) => { return await updateFile(owner, doneParams) } )
+    .then( () => { updateJobStatus(task) } )
   //})
   .then(() => {
     console.log('Task done')
@@ -122,8 +122,16 @@ const finnalizeOwner = (task, doneParams) => {
     console.log(err.stack)
     models.Task.update(
       {status: 'error', error_message: errorMsg},
-      {where: {id: taskId}})
+      {where: {id: task.id}})
   })
+}
+
+const getOwner = async (task) => {
+  const { owner_id } = JSON.parse( task.task_data )
+  const owner = await models.Owner.findOne({
+    where: {identity: `${owner_id}`}
+  })
+  return owner
 }
 
 const updateFile = (owner, doneParams) => {
@@ -146,30 +154,25 @@ const updateFile = (owner, doneParams) => {
     })
 }
 
-const updateLabOwner = async (owner, task) => {
-  console.log('jobsHelper - Update lab_owner')
-  const {lab_id} = JSON.parse( task.task_data )
+/** If the owner doesn't exist yet, then create it */
+const updateOwner = async (owner, task) => {
+  if ( _.isNil(owner) ) {
+    console.log('jobsHelper - Update owner')
+    const {owner_id, hpo_terms, relation, 
+          ethnicity, gender} = JSON.parse( task.task_data )
+    owner = await models.Owner.create({
+        identity: owner_id, hpo_terms: hpo_terms, relation: relation,
+        ethnicity: ethnicity, gender: gender
+      })
 
-  await models.LabOwner.create(
-    {
-      LabId: lab_id,
-      OwnerId: owner.id,
-    })
+    console.log('jobsHelper - Update lab_owner')
+    const {lab_id} = JSON.parse( task.task_data )
+    await models.LabOwner.create({
+        LabId: lab_id,
+        OwnerId: owner.id,
+      })
+  }
   return owner
-}
-
-const updateOwner = async (task) => {
-  console.log('jobsHelper - Update owner')
-
-  const {owner_id, hpo_terms, relation, 
-         ethnicity, gender} = JSON.parse( task.task_data )
-  const ret = await models.Owner.create(
-    {
-      identity: owner_id, hpo_terms: hpo_terms, relation: relation,
-      ethnicity: ethnicity, gender: gender
-    })
-  console.log('updateOwner() - owner.id: ', ret.id)
-  return ret
 }
 
 const updateJobStatus = async (task) => {
