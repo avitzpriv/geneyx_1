@@ -8,11 +8,21 @@ const fs = require('fs');
 
 const models = require('../models/index')
 const ownCtl = require('../controllers/Owner')
+const s3Helper = require('../helpers/s3sdkHelper')
 
 const upload = multer({ dest: 'Temp/' })
 
 router.get('/', (req, res) => {
     res.render('mylab')
+})
+
+/**
+ * Return a safe URL to file
+ */
+router.get('/download/:filePath', (req, res) => {
+  const filePath = req.params.filePath
+  const url = s3Helper.getSignedUrl('geneyx-test-bucket', filePath)
+  res.json({url: url})
 })
 
 router.get('/search/:lab_id', async (req, res) => {

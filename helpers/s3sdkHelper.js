@@ -6,6 +6,8 @@ const models = require('../models/index')
 const fs = require('fs')
 const AWS = require('aws-sdk')
 
+/*************************** Multipart upload **********************/
+
 const PART_SIZE = 1024 * 1024 * 5
 const maxUploadTries = 3
 const maxConcurrentUpload = 1
@@ -191,6 +193,25 @@ const completeMultipartUpload = (doneParams, env) => {
   })
 }
 
+/***************************** Singed URLs *************************/
+
+/**
+ * Used for receiving a private url for downloading a file from S3
+ */
+const getSignedUrl = (bucketName, fileName) => {
+  AWS.config.loadFromPath('./aws-config.json')
+  const s3 = new AWS.S3()
+
+  const url = s3.getSignedUrl('getObject', {
+      Bucket: bucketName,
+      Key: fileName,
+      Expires: 60 * 60   // In seconds
+  })
+  return url
+}
+
+/*******************************************************************/
 module.exports = {
-  startMultipartUpload: startMultipartUpload
+  startMultipartUpload: startMultipartUpload,
+  getSignedUrl: getSignedUrl
 }

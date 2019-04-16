@@ -36,3 +36,15 @@ const windowReady = () => {
 }
 
 window.addEventListener("load", windowReady)
+
+const downloadClicked = (filePath) => {
+  fetch(`/lab/download/${filePath}`)
+    .then( response => { return response.json() })
+    .then( json => {
+      const url = json.url
+      window.location = url
+    })
+    .catch( error => {
+      console.error('Request failed', error)
+    })
+}

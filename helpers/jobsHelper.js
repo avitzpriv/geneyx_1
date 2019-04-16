@@ -128,9 +128,6 @@ const finnalizeOwner = (task, doneParams) => {
 
 const updateFile = (owner, doneParams) => {
   console.log('jobsHelper - Update file')
-
-  const url = `https://s3-eu-west-1.amazonaws.com/${doneParams.Bucket}/${doneParams.Key}`
-
   console.log('+++++++++++++++++++++++++++++++++')
   console.log(doneParams)
   console.log('+++++++++++++++++++++++++++++++++')
@@ -142,7 +139,7 @@ const updateFile = (owner, doneParams) => {
   console.log('fileMetaData: ', fileMetaData)
   
   return models.File.create({
-      url: url,
+      url: doneParams.Key,
       file_meta_data: fileMetaData,
       OwnerId: owner.id,
       uploadDatae: Date.now
