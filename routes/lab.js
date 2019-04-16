@@ -43,45 +43,38 @@ router.get('/search/:lab_id', async (req, res) => {
     wherePart.hpo_terms = {[Sequelize.Op.like]: `%${hpo}%`}
   }
 
-  const sequelize = require('sequelize')
+  // const sequelize = require('sequelize')
 
-  const owners = await models.sequelize.query(`select "OwnerId" from "LabOwners" where "LabId" = ${labId}`)
-  const ownerIds = _.map(owners[0], o => o.OwnerId)
-  wherePart.id = {[Sequelize.Op.in]: ownerIds}
-
-  models.Owner.findAll({
-    where: wherePart,
-    include    : [{ model: models.File, attributes: ['url']}],
-    order: [['createdAt', 'DESC']],
-  })
-  .then( result => {
-
-    const ownersList = []
-    _.each(result, owner => {
-      ownersList.push({
-        ownerId: owner.identity,
-        createdAt: owner.createdAt,
-        gender: genderIntToStr(owner.gender),
-        ethnicity: owner.ethnicity,
-        hpo: owner.hpo_terms,
-        filePath: (owner.File != null ? owner.File.url : null),
-        fileName: `${owner.identity}.fastq`
-      })
+  const files = await models.sequelize.query(
+    `select o.identity, o."createdAt", o.hpo_terms, o.ethnicity, o.gender, f.url
+     from "Files" as f
+     join "Owners" as o on o.id = f."OwnerId"
+     join "LabOwners" as lo on lo."OwnerId" = o.id
+     where lo."LabId" = ${labId}
+     order by o."createdAt" desc`
+  )
+  
+  const ownersList = []
+  _.each(files[0], file => {
+    ownersList.push({
+      ownerId: file.identity,
+      createdAt: file.createdAt,
+      gender: genderIntToStr(file.gender),
+      ethnicity: file.ethnicity,
+      hpo: file.hpo_terms,
+      filePath: file.url
     })
+  })
 
-    res.render('mylab', 
-               { name: labName,
-                 id: labId,
-                 ownersList: ownersList,
-                 gender: gender,
+  res.render('mylab', 
+              { name: labName,
+                id: labId,
+                ownersList: ownersList,
+                gender: gender,
                 hpo: hpo,
-              ethnicity: ethnicity })
-    return
-  })
-  .catch( err => {
-    console.error('Error in search: ', err)
-    res.send(500)
-  })
+                ethnicity: ethnicity
+              })
+  return
 })
 
 router.post('/bulkupload/:lab_id',upload.single('bulkuploadexcel'), (req, res) => {
@@ -131,7 +124,6 @@ const createJob = async () => {
 }
 
 const genderIntToStr = (gender) => {
-  console.log('gender: ', gender)
   if (gender === 1) {
     return 'Male'
   } else if (gender === 2) {

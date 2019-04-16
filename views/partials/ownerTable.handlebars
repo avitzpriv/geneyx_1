@@ -21,7 +21,7 @@
         <td>{{gender}}</td>
         <td>{{ethnicity}}</td>
         <td>{{hpo}}</td>
-        <td><button class='gnx-download-btn' onclick="downloadClicked('{{filePath}}');">Download FastQ</button></td>
+        <td><div class='gnx-download-link' onclick="downloadClicked('{{filePath}}');">{{filePath}}</div></td>
       </tr>
     {{/each}}
   </tbody>

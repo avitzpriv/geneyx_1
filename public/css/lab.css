@@ -115,6 +115,13 @@ table, th, td {
   border: 1px solid darkgrey;
 }
 
+.gnx-download-link {
+  display: inline;
+  color: blue;
+  border-bottom: solid 1px blue;
+  cursor: pointer;
+}
+
 /*************************** Other stuff *************/
 
 
