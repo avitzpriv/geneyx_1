@@ -202,12 +202,12 @@ const completeMultipartUpload = (doneParams, env) => {
 /**
  * Used for receiving a private url for downloading a file from S3
  */
-const getSignedUrl = (bucketName, fileName) => {
+const getSignedUrl = (fileName) => {
   AWS.config.loadFromPath('./aws-config.json')
   const s3 = new AWS.S3()
 
   const url = s3.getSignedUrl('getObject', {
-      Bucket: bucketName,
+      Bucket: process.env.S3_BUCKET,
       Key: fileName,
       Expires: 60 * 60   // In seconds
   })

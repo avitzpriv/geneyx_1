@@ -6,7 +6,6 @@ const sequelize = models.sequelize
 
 
 const progressBar = (req, res, next) => {
-  console.log('JobsController - progress_bar()')
 
   models.Job.findOne({
     attributes: ['id'],

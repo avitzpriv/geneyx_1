@@ -71,6 +71,12 @@ const runTask = (task) => {
   const { file_path } = JSON.parse( task.task_data )
   const taskId = task.id
 
+  finnalizeOwner(task, {Bucket: 'geneyx-prod-bucket',
+                        Key: 'na',
+                        uploadId: 'na'
+                      })
+  return
+
   /**
    * This one is a handfull:
    * start a multipart Upload.

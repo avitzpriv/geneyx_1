@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
  */
 router.get('/download/:filePath', (req, res) => {
   const filePath = req.params.filePath
-  const url = s3Helper.getSignedUrl('geneyx-test-bucket', filePath)
+  const url = s3Helper.getSignedUrl( filePath )
   res.json({url: url})
 })
 
@@ -32,25 +32,24 @@ router.get('/search/:lab_id', async (req, res) => {
   const labId = req.query.lab_id
   const labName = req.query.lab_name
 
-  const wherePart = {}
+  let wherePart = `lo."LabId" = ${labId}`
   if (!_.isEmpty(gender)) {
-    wherePart.gender = genderStrToInt(gender.toLowerCase())
+    wherePart = `${wherePart} and o.gender = ${genderStrToInt(gender.toLowerCase())}`
   }
   if (!_.isEmpty(ethnicity)) {
-    wherePart.ethnicity = {[Sequelize.Op.like]: `%${ethnicity}%`}
+    wherePart = `${wherePart} and o.ethnicity like '%${ethnicity}%'`
   }
   if (!_.isEmpty(hpo)) {
     wherePart.hpo_terms = {[Sequelize.Op.like]: `%${hpo}%`}
+    wherePart = `${wherePart} and o.hpo_terms like '%${hpo}%'`
   }
-
-  // const sequelize = require('sequelize')
 
   const files = await models.sequelize.query(
     `select o.identity, o."createdAt", o.hpo_terms, o.ethnicity, o.gender, f.url
      from "Files" as f
      join "Owners" as o on o.id = f."OwnerId"
      join "LabOwners" as lo on lo."OwnerId" = o.id
-     where lo."LabId" = ${labId}
+     where ${wherePart}
      order by o."createdAt" desc`
   )
   

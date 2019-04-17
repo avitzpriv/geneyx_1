@@ -1,5 +1,6 @@
 
 const runBatchJobs = require('./helpers/jobsHelper')
-setInterval(runBatchJobs, 1000 * 60)
+runBatchJobs()
+setInterval(runBatchJobs, 1000 * 5)
 
 

@@ -49,9 +49,9 @@
 }
 /*************************** Search *****************/
 .gnx-lab-search-cont {
-  margin-top: 2rem;
+  margin-top: 1rem;
   background-color: lightgrey;
-  padding: 1rem;
+  padding: 0.5rem 1rem 0.5rem 1rem;
 }
 
 .gnx-lab-search-label {
@@ -94,10 +94,13 @@
 }
 
 /*************************** Table ****************/
-/*.gnx-table {
+.gnx-table {
+  display: block;
+  overflow-y: scroll;
+  height: 25rem;
   width: 100%;
   border-style: solid;
-}*/
+}
 
 table {
   border-collapse: collapse;
