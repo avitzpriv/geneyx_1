@@ -21,7 +21,6 @@ const bcrypt = require('bcryptjs')
 const userHelper = require('./helpers/userHelper')
 const runBatchJobs = require('./helpers/jobsHelper')
 
-
 const Owner = models.Owner
 const OwnerInfo = models.OwnerInfo
 
@@ -283,7 +282,8 @@ app.use('/login', login )
 // Run every 2 minutes
 ///////////////////////////////////////////////////////////////////////////////////
 // setInterval(runBatchJobs, 1000 * 60 * 2)
-runBatchJobs()
+// runBatchJobs()
+
 
 ///////////////////////////////////////////////////////////////////////////////////
 //  For Socket.io

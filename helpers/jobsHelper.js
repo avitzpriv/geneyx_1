@@ -1,7 +1,7 @@
-// const sequelize = require('sequelize')
 const models = require('../models/index')
 const sequelize = models.sequelize
-const s3sdk = require('./s3sdkHelper')
+// const s3sdk = require('./s3sdkHelper')
+const s3sdk = require('./bufferedS3sdkHelper')
 const _ = require('lodash')
 
 const runJobNextTask = () => {
