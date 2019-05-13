@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Files', {
+    return queryInterface.createTable('files', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -11,20 +11,20 @@ module.exports = {
       url: { type: Sequelize.STRING, allowNull: false },
       /* The file meta data is here to capture all information needed to actually locate
          the file. */
-      fileMetaData: { type: Sequelize.STRING, allowNull: false },
-      ownerId: { type: Sequelize.INTEGER, allowNull: false  },
-      uploadDate: { type: Sequelize.DATE },
-      createdAt: {
+      file_meta_data: { type: Sequelize.STRING, allowNull: false },
+      owner_id: { type: Sequelize.INTEGER, allowNull: false  },
+      upload_date: { type: Sequelize.DATE },
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Files');
+    return queryInterface.dropTable('files')
   }
 };

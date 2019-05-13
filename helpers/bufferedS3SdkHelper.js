@@ -233,6 +233,5 @@ const getSignedUrl = (fileName) => {
 /*******************************************************************/
 module.exports = {
   startMultipartUpload: startMultipartUpload,
-  getSignedUrl: getSignedUrl,
-  TestTransform: TestTransform
+  getSignedUrl: getSignedUrl
 }

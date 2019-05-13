@@ -7,19 +7,21 @@ const STATUS_DONE  = 'done'
 const STATUS_ERROR = 'error'
 
 module.exports = (sequelize, DataTypes) => {
-  const Job = sequelize.define('Job', {
+  const job = sequelize.define('job', {
     name: { type: DataTypes.STRING },
     user_id: {type: Sequelize.INTEGER },
     status: {type: Sequelize.STRING },
     error_message: {type: Sequelize.STRING },
-    createdAt: {type: Sequelize.DATE },
-    updatedAt: {type: Sequelize.DATE},
-  }, {logging:true})
+  }, {
+    logging:true,
+    underscored: true,
+    timestamps: true
+  })
 
   // associations can be defined here
-  Job.associate = function(models) {
-    Job.belongsTo(models.User)
+  job.associate = function(models) {
+    job.belongsTo(models.user)
   }
 
-  return Job
+  return job
 }

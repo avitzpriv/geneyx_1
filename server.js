@@ -236,8 +236,8 @@ const authenticate = (req, res, next) => {
     return
   }
 
-  models.User
-    .findOne({where: {userName: userName}})
+  models.user
+    .findOne({where: {user_name: userName}})
     .then((user) => {
 
       if (user) {
@@ -249,7 +249,7 @@ const authenticate = (req, res, next) => {
               'Content-Type': 'text/plain'
             })
 
-            res.end(`{"labid": "${user.LabId}"}`)
+            res.end(`{"labid": "${user.lab_id}"}`)
             return
           } else {
             res.status(403).json({message: '1 - Username or password is incorrect'})

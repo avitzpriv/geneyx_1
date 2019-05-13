@@ -7,7 +7,7 @@ const ETaskStatus = [
 module.exports = {
 
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Tasks', {
+    return queryInterface.createTable('tasks', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -24,7 +24,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       error_message: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(4096)
       },
       num_reruns: {
         type: Sequelize.INTEGER
@@ -35,17 +35,17 @@ module.exports = {
       task_state: {
         type: Sequelize.STRING
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }
     })
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Jobs')
+    return queryInterface.dropTable('jobs')
   }
 }

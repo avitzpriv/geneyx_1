@@ -33,14 +33,4 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 
 
-// one of my trials **AviY**
-// //Models/tables
-// db.owners = require('../models/owner.js')(sequelize, Sequelize);  
-// db.labs = require('../models/lab.js')(sequelize, Sequelize);  
-// db.ownerInfos = require('../models/ownerinfo.js')(sequelize, Sequelize);
-// db.labOwner = require('../models/labowner.js')(sequelize, Sequelize);
-// //Relations
-// db.owners.belongsTo(db.labs);  
-// db.labs.belongsTo(db.owners);  
-
 module.exports = db;

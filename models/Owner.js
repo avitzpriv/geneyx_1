@@ -1,7 +1,9 @@
 const Sequelize = require('sequelize')
+
 'use strict'
+
 module.exports = (sequelize, DataTypes) => {
-  const Owner = sequelize.define('Owner', {
+  const owner = sequelize.define('owner', {
     identity: {type: Sequelize.STRING},  // The external id
     active: { type: Sequelize.BOOLEAN, defaultValue: false },
     deleted: { type: Sequelize.BOOLEAN, defaultValue: false },
@@ -12,14 +14,15 @@ module.exports = (sequelize, DataTypes) => {
     property2: { type: Sequelize.STRING },
     hpo_terms: { type: Sequelize.STRING },
     ethnicity: { type: Sequelize.STRING },
-    createdAt: {type: Sequelize.DATE},
-    updatedAt: {type: Sequelize.DATE},
-  }, {})
-  Owner.associate = function(models) {
-     models.Owner.belongsToMany(models.Lab, {through: models.LabOwner})
-     models.Owner.hasOne(models.User)
-     models.Owner.hasOne(models.File)
+  }, {
+    underscored: true,
+    timestamps: true
+  })
+  owner.associate = function(models) {
+     models.owner.belongsToMany(models.lab, {through: models.lab_owner})
+     models.owner.hasOne(models.user)
+     models.owner.hasOne(models.file)
   }
 
-  return Owner
+  return owner
 }

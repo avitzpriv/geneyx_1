@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Labs', {
+    return queryInterface.createTable('labs', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,9 +13,6 @@ module.exports = {
       },
       country: {type:Sequelize.STRING},
       address: { type: Sequelize.STRING },
-      // user_name: { type: Sequelize.STRING },
-      // user_email: { type: Sequelize.STRING, unique: true, validate: { isEmail: true } },
-      // user_pass: { type: Sequelize.STRING }, // encrypted
       active: { type: Sequelize.BOOLEAN, defaultValue: true },
       deleted: { type: Sequelize.BOOLEAN, defaultValue: false },
       phone: { type: Sequelize.STRING },
@@ -24,17 +21,17 @@ module.exports = {
       issued: { type: Sequelize.DATE},
       expiry: { type: Sequelize.DATE},
       updates: { type: Sequelize.BOOLEAN, defaultValue: false},
-        createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Labs');
+    return queryInterface.dropTable('labs');
   }
 };

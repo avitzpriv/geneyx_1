@@ -20,7 +20,7 @@ const runJobNextTask = () => {
     // Look for a task that's waiting for rerun
     const reruntask = await models.Task.findOne({
       where: {status: 'rerun'},
-      order: [['createdAt', 'DESC']],
+      order: [['created_at', 'DESC']],
       limit: 1
     })
     if (reruntask !== null) {
@@ -50,7 +50,7 @@ const runJobNextTask = () => {
     // Look for the next that is ready task
     const readytask = await models.Task.findOne({
                         where: {status: 'ready'},
-                        order: [['createdAt', 'DESC']],
+                        order: [['created_at', 'DESC']],
                         limit: 1
                       })
     if (readytask !== null) {
@@ -173,9 +173,9 @@ const updateOwner = async (owner, task) => {
 
     console.log('jobsHelper - Update lab_owner')
     const {lab_id} = JSON.parse( task.task_data )
-    await models.LabOwner.create({
-        LabId: lab_id,
-        OwnerId: owner.id,
+    await models.lab_owner.create({
+        lab_id: lab_id,
+        owner_id: owner.id,
       })
   }
   return owner
@@ -183,7 +183,7 @@ const updateOwner = async (owner, task) => {
 
 const updateJobStatus = async (task) => {
   console.log('jobsHelper - check Job')
-  const liveTasksNum = await models.Task.count(
+  const liveTasksNum = await models.task.count(
     {where: {job_id: task.job_id,
      $or: [ 
             {status: {$eq: 'ready'}},
@@ -192,7 +192,7 @@ const updateJobStatus = async (task) => {
           ]}})
   console.log(liveTasksNum)
 
-  const errorTasksNum = await models.Task.count(
+  const errorTasksNum = await models.task.count(
     {where: {job_id: task.job_id, status: 'error'}})
 
   let stat
@@ -208,7 +208,7 @@ const updateJobStatus = async (task) => {
       stat = 'done'
     }
     console.log('jobsHelper - update job')
-    return models.Job.update({status: stat, error_message: errorMsg}, {where: {id: task.job_id}})
+    return models.job.update({status: stat, error_message: errorMsg}, {where: {id: task.job_id}})
   }
 
   console.log('jobsHelper - not updating job')

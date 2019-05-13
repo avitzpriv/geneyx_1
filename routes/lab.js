@@ -32,7 +32,7 @@ router.get('/search/:lab_id', async (req, res) => {
   const labId = req.query.lab_id
   const labName = req.query.lab_name
 
-  let wherePart = `lo."LabId" = ${labId}`
+  let wherePart = `lo."lab_id" = ${labId}`
   if (!_.isEmpty(gender)) {
     wherePart = `${wherePart} and o.gender = ${genderStrToInt(gender.toLowerCase())}`
   }
@@ -45,19 +45,19 @@ router.get('/search/:lab_id', async (req, res) => {
   }
 
   const files = await models.sequelize.query(
-    `select o.identity, o."createdAt", o.hpo_terms, o.ethnicity, o.gender, f.url
-     from "Files" as f
-     join "Owners" as o on o.id = f."OwnerId"
-     join "LabOwners" as lo on lo."OwnerId" = o.id
+    `select o.identity, o."created_at", o.hpo_terms, o.ethnicity, o.gender, f.url
+     from files as f
+     join owners as o on o.id = f.owner_id
+     join lab_owners as lo on lo.owner_id = o.id
      where ${wherePart}
-     order by o."createdAt" desc`
+     order by o."created_at" desc`
   )
   
   const ownersList = []
   _.each(files[0], file => {
     ownersList.push({
       ownerId: file.identity,
-      createdAt: file.createdAt,
+      createdAt: file.created_at,
       gender: genderIntToStr(file.gender),
       ethnicity: file.ethnicity,
       hpo: file.hpo_terms,
@@ -113,9 +113,9 @@ router.post('/bulkupload/:lab_id',upload.single('bulkuploadexcel'), (req, res) =
 })
 
 const createJob = async () => {
-  const job = await models.Job.create({
+  const job = await models.job.create({
                       name: 'upload-files',
-                      userId: 4,
+                      user_id: 4,
                       status: 'open'
                     })
   console.log('Job created: ', job)
@@ -159,7 +159,7 @@ const createTask = async (jobId, ownerId, hpoTerms, relation, ethnicity, _gender
     lab_id: lab_id
   }
 
-  const task = await models.Task.create({
+  const task = await models.task.create({
                       name: `upload-job-${ownerId}`,
                       job_id: jobId,
                       status: 'ready',
@@ -171,9 +171,9 @@ const createTask = async (jobId, ownerId, hpoTerms, relation, ethnicity, _gender
 
 router.get('/:lab_id', (req, res) => {
     var statistics = {}
-    models.Lab.findOne({ where: { id: req.params.lab_id } })
+    models.lab.findOne({ where: { id: req.params.lab_id } })
         .then((lab) => {
-            models.LabOwner.count({ where: { LabId: lab.id } }).then((cnt) => {
+            models.lab_owner.count({ where: { lab_id: lab.id } }).then((cnt) => {
                 statistics.numOwners = cnt;
                 lab.getOwners().then((ownerList) => {
                     if (ownerList) {
@@ -185,14 +185,13 @@ router.get('/:lab_id', (req, res) => {
                         }
                     }
                     res.render('mylab', { name: lab.name, id: lab.id, ownersList: null })
-                    // res.render('mylab', { name: lab.name, id: lab.id, Test: true })
                 }).catch(err => console.log(err))
             }).catch(err => console.log(err))
         }).catch(err => console.log(err))
 });
 
 router.get('/:lab_id/owners', (req, res) => {
-    models.Lab.findOne({ where: { id: req.params.lab_id } }, { order: Sequelize.literal('id', 'ASC') })
+    models.lab.findOne({ where: { id: req.params.lab_id } }, { order: Sequelize.literal('id', 'ASC') })
         .then((lab) => {
             lab.getOwners({ order: Sequelize.literal('id', 'ASC') }).then((ownerList) => {
                 res.render('mylab', { name: lab.name, id: lab.id, ownersList: ownerList });
@@ -225,9 +224,6 @@ router.post('/:lab_id/test2', (req, res) => {
 
     console.log(`Adding ${JSON.stringify(req.body)}`)
     userObj = { userName: req.body.name, email: req.body.email, password: '12345' }
-    // delete req.body.name;
-    // delete req.body.email;
-    // delete req.body.password;
 
     ownCtl.createOwner(req.body, userObj, req.params.lab_id).then((result) => {
         res.redirect(`/lab/${req.params.lab_id}/`);

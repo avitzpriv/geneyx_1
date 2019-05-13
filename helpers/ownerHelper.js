@@ -38,7 +38,7 @@ const createOwner = (ownerObj, userObj, labid = null, fileUrl = null) => {
                             return models.File.create({
                                 url:fileUrl,
                                 ownerId:ownerRecord.id,
-                                uploadDate:ownerRecord.createdAt
+                                uploadDate:ownerRecord.created_at
                             })
                             .then((fileRec) =>{
                                 return ({ l: labRecord, o: ownerRecord, u:userRecord })   

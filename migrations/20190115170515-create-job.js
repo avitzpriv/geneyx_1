@@ -9,7 +9,7 @@ const EJobStatus = [
 module.exports = {
 
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Jobs', {
+    return queryInterface.createTable('jobs', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -28,17 +28,17 @@ module.exports = {
       error_message: {
         type: Sequelize.STRING
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }
     })
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Jobs')
+    return queryInterface.dropTable('jobs')
   }
 }

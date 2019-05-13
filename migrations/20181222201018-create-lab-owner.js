@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('LabOwners', {
+    return queryInterface.createTable('lab_owners', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -16,31 +16,23 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
-      LabId: {
-        type: Sequelize.INTEGER/*,
-          references: {
-            model: 'Labs',
-            key: 'id'
-          },*/
+      lab_id: {
+        type: Sequelize.INTEGER
       },
-      OwnerId: {
-        type: Sequelize.INTEGER/*,
-        references: {
-          model: 'Owners',
-          key: 'id'
-        }*/
+      owner_id: {
+        type: Sequelize.INTEGER
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('LabOwners');
+    return queryInterface.dropTable('lab_owners');
   }
 };

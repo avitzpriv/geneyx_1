@@ -7,10 +7,10 @@ const sequelize = models.sequelize
 
 const progressBar = (req, res, next) => {
 
-  models.Job.findOne({
+  models.job.findOne({
     attributes: ['id'],
     where: {status: 'open'},
-    order: [['createdAt', 'DESC']],
+    order: [['created_at', 'DESC']],
     limit: 1
   }).then( job => {
 
@@ -19,7 +19,7 @@ const progressBar = (req, res, next) => {
       return
     }
 
-    models.Task.findAll({
+    models.task.findAll({
       attributes: ['status', [sequelize.fn('count', sequelize.col('status')), 'cnt']],
       where: {job_id: job.id},
       group: ['status']

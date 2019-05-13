@@ -2,7 +2,7 @@ const models = require('../models/index')
 
 const createUser = (userName, email, password, type, labId) => {
   models.User
-    .create({userName: userName, email: email, password: password, type: type, LabId: labId})
+    .create({user_name: userName, email: email, password: password, type: type, lab_id: labId})
     .then(r => {
       console.log(`User: ${userName} saved successfully`)
       return null
