@@ -107,7 +107,7 @@ const uploadPartsRunner = async (multipart, env) => {
     // Send a single part
     console.log('Uploading part: #', partParams.PartNumber, ', Range start:', rangeStart, ', in task: ', env.taskId)
 
-    await models.Task.update({ 
+    await models.task.update({ 
       task_state: JSON.stringify({partNum: env.partNum, uploadId: multipart.UploadId}),
       status: 'running'
     }, {

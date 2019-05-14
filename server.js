@@ -282,15 +282,15 @@ app.use('/login', login )
 // Run every 2 minutes
 ///////////////////////////////////////////////////////////////////////////////////
 // setInterval(runBatchJobs, 1000 * 60 * 2)
-// runBatchJobs()
+runBatchJobs()
 
 
 ///////////////////////////////////////////////////////////////////////////////////
 //  For Socket.io
 ///////////////////////////////////////////////////////////////////////////////////
 io.on('connection', (socket) => {
-    console.log('socket.io connected, setting up uploads listeners')
-    require('./helpers/server-upload-logic').socketIoSetup(socket)
+  console.log('socket.io connected, setting up uploads listeners')
+  require('./helpers/server-upload-logic').socketIoSetup(socket)
 })
 
 //app.use('/login', require('./routes/login'));

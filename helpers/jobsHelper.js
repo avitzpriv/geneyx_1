@@ -7,7 +7,7 @@ const _ = require('lodash')
 const runJobNextTask = () => {
 
   console.log('runJobNextTask() - Try to run task')
-  models.Task.count({
+  models.task.count({
     where: {status: 'running'}
   }).then( async num => {
 
@@ -18,7 +18,7 @@ const runJobNextTask = () => {
     }
 
     // Look for a task that's waiting for rerun
-    const reruntask = await models.Task.findOne({
+    const reruntask = await models.task.findOne({
       where: {status: 'rerun'},
       order: [['created_at', 'DESC']],
       limit: 1
@@ -27,11 +27,11 @@ const runJobNextTask = () => {
       // If there is such a task, but we went through too many re-runs then mark 
       // the entire job as an error.
       if (reruntask.num_reruns >= 2) {
-        const rettask = await models.Task.update(
+        const rettask = await models.task.update(
           {status: 'error'},
           {where: {id: reruntask.id}}
         )
-        const retjob = models.Job.update(
+        const retjob = models.job.update(
           {status: 'error', error_message: `task: ${reruntask.id} finnished with errors`},
           {where: {id: reruntask.job_id}}
         )
@@ -39,7 +39,7 @@ const runJobNextTask = () => {
 
       console.log('runJobNextTask() - ReRunning task: ', reruntask.id)
       // before re-running, update the status
-      const ret = await models.Task.update(
+      const ret = await models.task.update(
         {num_reruns: reruntask.num_reruns + 1},
         {where: {id: reruntask.id}}
       )
@@ -48,7 +48,7 @@ const runJobNextTask = () => {
     }
 
     // Look for the next that is ready task
-    const readytask = await models.Task.findOne({
+    const readytask = await models.task.findOne({
                         where: {status: 'ready'},
                         order: [['created_at', 'DESC']],
                         limit: 1
@@ -75,7 +75,7 @@ const runTask = (task) => {
                         Key: 'na',
                         uploadId: 'na'
                       })
-  return
+  // return
 
   /**
    * This one is a handfull:
@@ -95,7 +95,7 @@ const runTask = (task) => {
           errorMsg = `Multipart upload failed with error: ${errMsg}`
           console.warn(errorMsg)
           console.log(errMsg.stack)
-          models.Task.update(
+          models.task.update(
             {status: 'rerun', error_message: errorMsg, num_reruns: task.num_reruns + 1},
             {where: {id: taskId}})
         })
@@ -110,7 +110,7 @@ const finnalizeOwner = (task, doneParams) => {
   console.log('jobsHelper - upload task is done')
   //sequelize.transaction(async (t) => {
       console.log('jobsHelper - Update task with ID: ', task.id)
-    models.Task.update(
+    models.task.update(
         {status: 'done'},
         {where: {id: task.id}}
     )
@@ -126,7 +126,7 @@ const finnalizeOwner = (task, doneParams) => {
     errorMsg = `Trasaction failed at end of task with error: ${err}`
     console.warn(errorMsg)
     console.log(err.stack)
-    models.Task.update(
+    models.task.update(
       {status: 'error', error_message: errorMsg},
       {where: {id: task.id}})
   })
@@ -134,7 +134,7 @@ const finnalizeOwner = (task, doneParams) => {
 
 const getOwner = async (task) => {
   const { owner_id } = JSON.parse( task.task_data )
-  const owner = await models.Owner.findOne({
+  const owner = await models.owner.findOne({
     where: {identity: `${owner_id}`}
   })
   return owner
@@ -152,10 +152,10 @@ const updateFile = (owner, doneParams) => {
   })
   console.log('fileMetaData: ', fileMetaData)
   
-  return models.File.create({
+  return models.file.create({
       url: doneParams.Key,
       file_meta_data: fileMetaData,
-      OwnerId: owner.id,
+      owner_id: owner.id,
       uploadDatae: Date.now
     })
 }
@@ -166,7 +166,7 @@ const updateOwner = async (owner, task) => {
     console.log('jobsHelper - Update owner')
     const {owner_id, hpo_terms, relation, 
           ethnicity, gender} = JSON.parse( task.task_data )
-    owner = await models.Owner.create({
+    owner = await models.owner.create({
         identity: owner_id, hpo_terms: hpo_terms, relation: relation,
         ethnicity: ethnicity, gender: gender
       })
