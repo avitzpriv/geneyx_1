@@ -30,10 +30,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       task_data: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(4096)
       },
       task_state: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       created_at: {
         allowNull: false,
