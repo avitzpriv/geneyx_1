@@ -1,7 +1,7 @@
 const models = require('../models/index')
 const sequelize = models.sequelize
 // const s3sdk = require('./s3sdkHelper')
-const s3sdk = require('./bufferedS3sdkHelper')
+
 const _ = require('lodash')
 
 const runJobNextTask = () => {
@@ -14,7 +14,7 @@ const runJobNextTask = () => {
     // Do not run if there's another upload running
     if (num > 0) {
       console.log('runJobNextTask() - Another task running')
-      return
+      process.exit(0)
     }
 
     // Look for a task that's waiting for rerun
@@ -60,22 +60,18 @@ const runJobNextTask = () => {
     }
 
     console.log('runJobNextTask() - No tasks in queue')  
-    return
+    process.exit(0)
   })
 }
 
 const runTask = (task) => {
+  const s3sdk = require('./bufferedS3sdkHelper')
+
   console.log('=========================')
   console.log("Start task: ", JSON.stringify(task))
   console.log('=========================')
   const { file_path } = JSON.parse( task.task_data )
   const taskId = task.id
-
-  finnalizeOwner(task, {Bucket: 'geneyx-prod-bucket',
-                        Key: 'na',
-                        uploadId: 'na'
-                      })
-  // return
 
   /**
    * This one is a handfull:
@@ -117,10 +113,11 @@ const finnalizeOwner = (task, doneParams) => {
     .then( async () => { return await getOwner(task) })
     .then( async (owner) => { return await updateOwner(owner, task) } )
     .then( async (owner) => { return await updateFile(owner, doneParams) } )
-    .then( () => { updateJobStatus(task) } )
+    .then( async () => { updateJobStatus(task) } )
   //})
   .then(() => {
     console.log('Task done')
+    process.exit(0)
   })
   .catch( err => {
     errorMsg = `Trasaction failed at end of task with error: ${err}`

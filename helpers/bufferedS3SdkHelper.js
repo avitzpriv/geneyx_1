@@ -1,7 +1,5 @@
 require('dotenv').config()
 const models = require('../models/index')
-const fs = require('fs')
-const AWS = require('aws-sdk')
 const { Writable } = require('stream')
 
 /*************************** Multipart upload **********************/
@@ -15,6 +13,8 @@ const maxUploadTries = 3
 const startMultipartUpload = (_task, _filePath) => {
 
   /************************ Setup ***********************************/
+  const fs = require('fs')
+  const AWS = require('aws-sdk')
   AWS.config.loadFromPath('./aws-config.json')
   
   const taskStateStr = _task.task_state
@@ -23,8 +23,12 @@ const startMultipartUpload = (_task, _filePath) => {
                                           JSON.parse(taskStateStr)
   
   // If failed in a part before then reload it
-  if (partNum > 0) { partNum -= 1 }
+  if (partNum > 0) {
+    console.log('partNum is bigger than zero')
+    partNum -= 1
+  }
   const inStream = fs.createReadStream(_filePath, { highWaterMark: PART_SIZE, start: partNum * PART_SIZE})
+
   const fileSize = fs.statSync(_filePath).size
 
   const fileKey = _filePath.split('/').pop()
@@ -56,11 +60,29 @@ const startMultipartUpload = (_task, _filePath) => {
     env.resolve = resolve
     env.reject = reject
 
+    const finishUpload = (e) => {
+      console.log('IN FINISH of outstream, Completing upload')
+      const doneParams = {
+        Bucket: process.env.S3_BUCKET,
+        Key: env.fileKey,
+        MultipartUpload: env.multipartMap,
+        UploadId: env.multipart.UploadId
+      }
+      completeMultipartUpload(doneParams, env)
+    }
+
     // Create a writable stream
     const outStream = new Writable({
+
       write(chunk, encoding, callback) {
 
-        console.log('In write() of outStream, chunk size is: ', chunk.size)
+        console.log('In write() of outStream, chunk size is: ', chunk.length)
+
+        if (chunk.length === 0) {
+          console.log('In chunk size is 0, calling finishUpload()')
+          finishUpload()
+        }
+
         env.buffer = chunk
         env.donePartCallback = callback
 
@@ -89,22 +111,16 @@ const startMultipartUpload = (_task, _filePath) => {
 
     // Handle the "finish" event.
     // It signals to outStream that inStream has nothing more to read
-    outStream.on('finish', (e) => {
-      console.log('IN FINISH of outstream, got: ')
-      console.log("Completing upload...")
-          const doneParams = {
-            Bucket: process.env.S3_BUCKET,
-            Key: env.fileKey,
-            MultipartUpload: env.multipartMap,
-            UploadId: env.multipart.UploadId
-          }
-          completeMultipartUpload(doneParams, env)
-    })
+    outStream.on('finish', finishUpload )
 
     /** The main action is here. inStream reads from disk and outStream uploads to S3 */
     inStream.pipe(outStream)
   })
+
+  
 }
+
+ 
 
 /**
  * a closure for the callback for the s3 api. Needed for env
@@ -166,7 +182,6 @@ const uploadPart = (multipart, partParams, tryNum, multipartMap, env) => {
 
   console.log('Calling s3.uploadPart')
   s3.uploadPart(partParams, async (multiErr, mData) => {
-    console.log('s3.uploadPart callback is called')
     if (multiErr) {
       let msg = `multiErr, upload part error: ${multiErr}`
       if (tryNum < maxUploadTries) {
@@ -217,6 +232,7 @@ const completeMultipartUpload = (doneParams, env) => {
     if (err) {
       const msg = `Error while completing multipart upload. S3 error msg: ${err}`
       console.warn(msg)
+      console.log('data: ', data)
       reject(msg)
     } else {
       const delta = (new Date() - startTime) / 1000

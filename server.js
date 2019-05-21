@@ -281,8 +281,17 @@ app.use('/login', login )
 // Set and interval for running regular batch jobs.
 // Run every 2 minutes
 ///////////////////////////////////////////////////////////////////////////////////
+// const runJobs = () => {
+//   console.log('Spawnning ...')
+//   const spawn = require('child_process').spawn
+//   spawn('node', ['./helpers/jobsRunnerHelper.js'])
+// }
+
+// runJobs()
+// setInterval(runJobs, 1000 * 60 * 1)
+
+runBatchJobs()
 setInterval(runBatchJobs, 1000 * 60 * 5)
-// runBatchJobs()
 
 
 ///////////////////////////////////////////////////////////////////////////////////

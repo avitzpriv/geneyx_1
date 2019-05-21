@@ -5,3 +5,4 @@ node_modules/
 *.bat
 /keys/*
 aws-config.json
+runs.log
