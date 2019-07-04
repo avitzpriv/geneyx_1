@@ -97,6 +97,7 @@ router.post('/bulkupload/:lab_id',upload.single('bulkuploadexcel'), (req, res) =
         const ethnicity = row[3]
         const gender    = row[4]
         const filePath  = row[5]
+        
         const task = createTask(job.dataValues.id, ownerId, hpoTerms,
                                 relation, ethnicity, gender, filePath,
                                 lab_id)
@@ -159,13 +160,14 @@ const createTask = async (jobId, ownerId, hpoTerms, relation, ethnicity, _gender
     lab_id: lab_id
   }
 
+  const taskName = `upload-job-${ownerId}`
   const task = await models.task.create({
-                      name: `upload-job-${ownerId}`,
+                      name: taskName,
                       job_id: jobId,
                       status: 'ready',
                       task_data: JSON.stringify(taskData)
                     })
-  console.log('Task created: ', task)
+  console.log('created task with name: ', taskName)
   return task
 }
 

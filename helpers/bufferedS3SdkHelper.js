@@ -22,14 +22,15 @@ const startMultipartUpload = (_task, _filePath) => {
                                           {partNum: 0, uploadId: null} :
                                           JSON.parse(taskStateStr)
   
+  const fileSize = fs.statSync(_filePath).size
+  const numOfParts = Math.ceil(fileSize / PART_SIZE)
+
   // If failed in a part before then reload it
-  if (partNum > 0) {
+  if (partNum > 0 && partNum !== numOfParts ) {
     console.log('partNum is bigger than zero')
     partNum -= 1
   }
   const inStream = fs.createReadStream(_filePath, { highWaterMark: PART_SIZE, start: partNum * PART_SIZE})
-
-  const fileSize = fs.statSync(_filePath).size
 
   const fileKey = _filePath.split('/').pop()
 
@@ -181,38 +182,52 @@ const uploadPart = (multipart, partParams, tryNum, multipartMap, env) => {
   const reject  = env.reject
 
   console.log('Calling s3.uploadPart')
-  s3.uploadPart(partParams, async (multiErr, mData) => {
-    if (multiErr) {
-      let msg = `multiErr, upload part error: ${multiErr}`
-      if (tryNum < maxUploadTries) {
-        console.warn(`${msg}. Retrying upload of part: #${partParams.PartNumber}`)
-        uploadPart(multipart, partParams, tryNum + 1, env)
-      } else {
-        msg = `Failed uploading part: #${partParams.PartNumber} with error: ${multiErr}`
-        console.warn(msg)
+  try {
+    s3.uploadPart(partParams, async (multiErr, mData) => {
+      if (multiErr) {
+        let msg = `multiErr, upload part error: ${multiErr}`
+        if (tryNum < maxUploadTries) {
+          console.warn(`${msg}. Retrying upload of part: #${partParams.PartNumber}`)
+          uploadPart(multipart, partParams, tryNum + 1, env)
+        } else {
+          msg = `Failed uploading part: #${partParams.PartNumber} with error: ${multiErr}`
+          console.warn(msg)
+        }
+        reject(msg)
+        return
       }
-      reject(msg)
-      return
-    }
 
-    multipartMap.Parts[partParams.PartNumber - 1] = {
-      ETag: mData.ETag,
-      PartNumber: Number(partParams.PartNumber)
-    }
-    console.log("Completed part", partParams.PartNumber)
-    console.log('mData', mData)
+      multipartMap.Parts[partParams.PartNumber - 1] = {
+        ETag: mData.ETag,
+        PartNumber: Number(partParams.PartNumber)
+      }
+      console.log("Completed part", partParams.PartNumber)
+      console.log('mData', mData)
 
-    res = await models.task.update({ 
-      task_state: JSON.stringify({
-        partNum: env.partNum,
-        uploadId: multipart.UploadId,
-        multipartMap: multipartMap
+      res = await models.task.update({ 
+        task_state: JSON.stringify({
+          partNum: env.partNum,
+          uploadId: multipart.UploadId,
+          multipartMap: multipartMap
+        })
+      }, {
+        where: {id: env.taskId}
       })
-    }, {
-      where: {id: env.taskId}
-    })
 
-    env.donePartCallback()
+      env.donePartCallback()
+    })
+  } catch (err) {
+    console.error(`Error while calling s3.upload(): ${err.message}, will try to rerun`)
+    setTaskToRerun(env.taskId)
+    exit(1)
+  }
+}
+
+const setTaskToRerun = async (tid) => {
+  await models.task.update({ 
+    status: 'rerun'
+  }, {
+    where: {id: tid}
   })
 }
 
